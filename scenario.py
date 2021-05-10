@@ -16,7 +16,6 @@ import numpy as np
 from IPython.display import HTML
 import itertools
 import tensorflow as tf
-# print(tf.config.list_physical_devices())
 
 from google.protobuf import text_format
 from waymo_open_dataset.metrics.ops import py_metrics_ops

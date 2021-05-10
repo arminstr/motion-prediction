@@ -3,6 +3,6 @@ A motion prediction cnn for trained on the waymo dataset. Therfore it is awesoml
 
 ## Visualization of the main concept
 
-TODO add image here
+<img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" height="300" alt="Image of the Rainbow traces.">
 
-here you can see the rainbow traces the vehicles and pedestrians leave on the data grid. :rainbow:
+Here you can see the rainbow traces the vehicles and pedestrians leave on the data grid. :rainbow:

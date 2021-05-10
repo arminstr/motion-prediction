@@ -27,7 +27,7 @@ from scenario import Scenario, StateType, EgoVehicle, State
 FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00000-of-01000'
 
 GRID_SIZE = 256
-GRID_RESOLUTION = 1 # meters
+GRID_RESOLUTION = 0.5 # meters
 GRID_RESOLUTION_INV = (1/GRID_RESOLUTION)
 
 grid = np.zeros((GRID_SIZE, GRID_SIZE))
