@@ -21,10 +21,9 @@ from waymo_open_dataset.metrics.ops import py_metrics_ops
 from waymo_open_dataset.metrics.python import config_util_py as config_util
 from waymo_open_dataset.protos import motion_metrics_pb2
 
-from scenario import Scenario, StateType, EgoVehicle, State
+from scenario import RoadGraphType, Scenario, StateType, EgoVehicle
 
-
-FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00000-of-01000'
+FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00007-of-01000'
 
 GRID_SIZE = 256
 GRID_RESOLUTION = 0.5 # meters
@@ -101,10 +100,27 @@ def getGridElements(x, y, bbox_yaw, length, width):
     
     for x in np.arange(min_x, max_x, GRID_RESOLUTION):
         for y in np.arange(min_y, max_y, GRID_RESOLUTION):
+            # TODO: Doing this with Triangles leaves some holes in the Grid.
+            #       Suggested fix: Do it using the rectangle.
             bT1 = gridElementContainedIn2DTriangle( boundingBox[0], boundingBox[2], boundingBox[3], x, y)
             bT2 = gridElementContainedIn2DTriangle( boundingBox[0], boundingBox[1], boundingBox[3], x, y)
             if bT1 or bT2:
                 gridElements.append((x, y))
+    return gridElements
+
+def getGridElement(x, y):
+    gridElements = []
+    if x > 0:
+        x = m.ceil(x * GRID_RESOLUTION_INV) / GRID_RESOLUTION_INV
+    if x < 0:
+        x = m.floor(x * GRID_RESOLUTION_INV) / GRID_RESOLUTION_INV
+
+    if y > 0:
+        y = m.ceil(y * GRID_RESOLUTION_INV) / GRID_RESOLUTION_INV
+    if y < 0:
+        y = m.floor(y * GRID_RESOLUTION_INV) / GRID_RESOLUTION_INV
+    
+    gridElements.append((x, y))
     return gridElements
 
 def convertGlobalToVehicleGridFrame(elements):
@@ -121,49 +137,76 @@ def convertGlobalToVehicleGridFrame(elements):
     return e_ret
 
 def addStateToGrid(x, y, bbox_yaw, length, width, height, vel_yaw, velocity_x, velocity_y, status_id):
-    # do a rasterization for the vehicle
+    # do a rasterization for the object state
     if length < GRID_RESOLUTION * 2:
         length = GRID_RESOLUTION * 2
     if width < GRID_RESOLUTION * 2:
         width = GRID_RESOLUTION * 2
     elements = getGridElements(x, y, bbox_yaw, length, width)
-    # elements = checkRegionOfInterest(elements)
     elements = convertGlobalToVehicleGridFrame(elements)
     
     for e in elements:
         grid[int(e[0])][int(e[1])] = status_id
 
+def addRoadGraphSampleToGrid(xyz, dir, sample_type):
+    # do a rasterization for the RoadGraphSample
+    elements = getGridElement(xyz[0], xyz[1])
+    elements = convertGlobalToVehicleGridFrame(elements)
+    for e in elements:
+        grid[int(e[0])][int(e[1])] = sample_type
+
 def evaluatePast(scenario):
-    i = 0
-    for valid in scenario.get_parsed_data()['state/past/valid'].numpy():
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                if scenario.get_parsed_data()['state/is_sdc'].numpy()[i] == 1:
-                    ego_vehicle.global_x = scenario.get_parsed_data()['state/past/x'].numpy()[i][j]
-                    ego_vehicle.global_y = scenario.get_parsed_data()['state/past/y'].numpy()[i][j]
-                    ego_vehicle.yaw = scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j]
-            j += 1
-        
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                status = int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-                addStateToGrid  (   scenario.get_parsed_data()['state/past/x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/y'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/length'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/width'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/height'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/vel_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/velocity_x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/velocity_y'].numpy()[i][j],
-                                    status
-                                )
-            j += 1
-        i += 1
+    if ego_vehicle.init:
+        i = 0
+        for valid in scenario.get_parsed_data()['state/past/valid'].numpy():    
+            j = 0
+            for vI in valid:
+                if vI == 1:
+                    status = 200 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
+                    addStateToGrid  (   scenario.get_parsed_data()['state/past/x'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/y'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/length'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/width'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/height'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/vel_yaw'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/velocity_x'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/past/velocity_y'].numpy()[i][j],
+                                        status
+                                    )
+                j += 1
+            i += 1
+    else:
+        evaluateFutureEgoPos(scenario)
+        evaluatePast(scenario)
 
 def evaluateFuture(scenario):
+    if ego_vehicle.init:
+        i = 0
+        for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
+            j = 0
+            for vI in valid:
+                if vI == 1:
+                    status = 200 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
+                    addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
+                                        scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
+                                        status
+                                    )
+                j += 1
+            i += 1
+    else:
+        evaluateFutureEgoPos(scenario)
+        evaluateFuture(scenario)
+
+def evaluateFutureEgoPos(scenario):
+    initialized_ego_vehicle = False
     i = 0
     for valid in scenario.get_parsed_data()['state/future/valid'].numpy():
         j = 0
@@ -173,86 +216,58 @@ def evaluateFuture(scenario):
                     ego_vehicle.global_x = scenario.get_parsed_data()['state/future/x'].numpy()[i][j]
                     ego_vehicle.global_y = scenario.get_parsed_data()['state/future/y'].numpy()[i][j]
                     ego_vehicle.yaw = scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j]
-            j += 1
-        
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                status = int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-                addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
-                                    status
-                                )
+                    initialized_ego_vehicle = True
             j += 1
         i += 1
+    ego_vehicle.init = initialized_ego_vehicle
+
+def evaluateMap(scenario):
+    if ego_vehicle.init:
+        i = 0
+        for valid in scenario.get_parsed_data()['roadgraph_samples/valid'].numpy():   
+            if valid == 1:
+                roadgraph_type = int(RoadGraphType(scenario.get_parsed_data()['roadgraph_samples/type'].numpy()[i]))
+                addRoadGraphSampleToGrid(   scenario.get_parsed_data()['roadgraph_samples/xyz'].numpy()[i],
+                                            scenario.get_parsed_data()['roadgraph_samples/dir'].numpy()[i],
+                                            roadgraph_type
+                                        )
+            i += 1
+    else:
+        evaluateFutureEgoPos(scenario)
+        evaluateMap(scenario)
+def evaluateTafficLights(scenario):
+    pass
 
 def evaluateAll(scenario):
-    i = 0
-    for valid in scenario.get_parsed_data()['state/future/valid'].numpy():
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                if scenario.get_parsed_data()['state/is_sdc'].numpy()[i] == 1:
-                    ego_vehicle.global_x = scenario.get_parsed_data()['state/future/x'].numpy()[i][j]
-                    ego_vehicle.global_y = scenario.get_parsed_data()['state/future/y'].numpy()[i][j]
-                    ego_vehicle.yaw = scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j]
-            j += 1
-        i += 1
+    start_time = time.time()
+    evaluateFutureEgoPos(scenario)
+    print("--- Ego Pos time:            %s s ---" % (time.time() - start_time))
+    start_time = time.time()
+    evaluateMap(scenario)
+    print("--- Map time:                %s s ---" % (time.time() - start_time))
+    start_time = time.time()
+    evaluateTafficLights(scenario)
+    print("--- Traffic Lights time:     %s s ---" % (time.time() - start_time))
+    start_time = time.time()
+    evaluatePast(scenario)
+    print("--- Past time:               %s s ---" % (time.time() - start_time))
+    start_time = time.time()
+    evaluateFuture(scenario)
+    print("--- Future time:             %s s ---" % (time.time() - start_time))
     
-    i = 0
-    for valid in scenario.get_parsed_data()['state/past/valid'].numpy():    
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                status = 100 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-                addStateToGrid  (   scenario.get_parsed_data()['state/past/x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/y'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/length'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/width'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/height'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/vel_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/velocity_x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/past/velocity_y'].numpy()[i][j],
-                                    status
-                                )
-            j += 1
-        i += 1
-    i = 0
-    for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
-        j = 0
-        for vI in valid:
-            if vI == 1:
-                status = 100 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-                addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
-                                    scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
-                                    status
-                                )
-            j += 1
-        i += 1
-
+    
 def main():
     dataset = tf.data.TFRecordDataset(FILENAME, compression_type='')
     data = next(dataset.as_numpy_iterator())
     scenario = Scenario(data)
     print("Scenario ID: " + scenario.get_scenario_id())
-    evaluateAll(scenario)
     
+    start_time = time.time()
+    evaluateAll(scenario)
+    print("--- Overall time:            %s s ---" % (time.time() - start_time))
+
     plt.imshow(grid)
+    plt.colorbar()
     plt.show()
 
 if __name__ == "__main__":

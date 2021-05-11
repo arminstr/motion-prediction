@@ -24,7 +24,7 @@ from waymo_open_dataset.metrics.ops import py_metrics_ops
 from waymo_open_dataset.metrics.python import config_util_py as config_util
 from waymo_open_dataset.protos import motion_metrics_pb2
 
-FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00002-of-01000'
+FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00007-of-01000'
 
 # Example field definition
 roadgraph_features = {

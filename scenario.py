@@ -34,10 +34,40 @@ class StateType(Enum):
     def __int__(self):
         return self.value
 
+# [0, 19]. LaneCenter-Freeway = 1, LaneCenter-SurfaceStreet = 2, LaneCenter-BikeLane = 3, 
+# RoadLine-BrokenSingleWhite = 6, RoadLine-SolidSingleWhite = 7, RoadLine-SolidDoubleWhite = 8, 
+# RoadLine-BrokenSingleYellow = 9, RoadLine-BrokenDoubleYellow = 10, Roadline-SolidSingleYellow = 11, 
+# Roadline-SolidDoubleYellow=12, RoadLine-PassingDoubleYellow = 13, RoadEdgeBoundary = 15, 
+# RoadEdgeMedian = 16, StopSign = 17, Crosswalk = 18, 
+# SpeedBump = 19, other values are unknown types and should not be present.
+class RoadGraphType(Enum):
+    UNSET = 0
+    LANE_CENTER_FREEWAY = 1
+    LANE_CENTER_SURFACE_STREET = 2
+    LANE_CENTER_BIKE_LANE = 3
+    ROAD_LINE_BROKEN_SINGLE_WHITE = 6
+    ROAD_LINE_SOLID_SINGLE_WHITE = 7
+    ROAD_LINE_SOLID_DOUBLE_WHITE = 8
+    ROAD_LINE_BROKEN_SINGLE_YELLOW = 9
+    ROAD_LINE_BROKEN_DOUBLE_YELLOW = 10
+    ROAD_LINE_SOLID_SINGLE_YELLOW = 11
+    ROAD_LINE_SOLID_DOUBLE_YELLOW = 12
+    ROAD_LINE_PASSING_DOUBLE_YELLOW = 13
+    ROAD_EDGE_BOUNDARY = 15
+    ROAD_EDGE_MEDIAN = 16
+    STOP_SIGN = 17
+    CROSSWALK = 18
+    SPEEDBUMP = 19
+    GENERIC_MAP_INFO = 20
+
+    def __int__(self):
+        return self.value
+
 class EgoVehicle:
     global_x = 0
     global_y = 0
     yaw = 0
+    init = False
     def __init__(self, x, y, yaw):
         self.global_x = x
         self.global_y = y
@@ -46,21 +76,6 @@ class EgoVehicle:
         return "EgoVehicle"
     def __str__(self):
         return "EgoVehicle: " + str(self.global_x) + ", " + str(self.global_y) + ", " + str(self.yaw)
-
-class State:
-    __ego_vehicle = EgoVehicle(0,0,0)
-    def __init__(self, x, y, bbox_yaw, length, width, status, ego_vehicle):
-        self.x = x
-        self.y = y
-        self.bbox_yaw = bbox_yaw
-        self.length = length
-        self.width = width
-        self.status = status
-        self.__ego_vehicle = ego_vehicle
-    def __repr__(self):
-        return "State"
-    def __str__(self):
-        return "State: " + str(self.x) + ", " + str(self.y) + ", " + str(self.status)
 
 class Scenario:
     # Example field definition
