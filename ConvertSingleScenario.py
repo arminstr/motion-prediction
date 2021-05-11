@@ -288,7 +288,6 @@ def main():
     print("--- Overall time:    %s s ---" % (time.time() - start_time))
 
     plt.imshow(grid, cmap='nipy_spectral', interpolation='none')
-    plt.colorbar()
     plt.show()
 
 if __name__ == "__main__":
