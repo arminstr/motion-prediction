@@ -6,6 +6,7 @@ import math as m
 import os
 import uuid
 import time
+import sys
 
 from matplotlib import cm
 import matplotlib.animation as animation
@@ -155,7 +156,7 @@ def addRoadGraphSampleToGrid(xyz, sample_type):
     for e in elements:
         grid[int(e[0])][int(e[1])] = sample_type
 
-def evaluatePast(scenario):
+def evaluatePast(scenario, ref):
     if ego_vehicle.init:
         i = 0
         for valid in scenario.get_parsed_data()['state/past/valid'].numpy():    
@@ -173,10 +174,16 @@ def evaluatePast(scenario):
                 j += 1
             i += 1
     else:
-        evaluateFutureEgoPos(scenario)
-        evaluatePast(scenario)
+        if ref == "future":
+            evaluateFutureEgoPos(scenario)
+        elif ref == "past":
+            evaluatePastEgoPos(scenario)
+        else:
+            sys.exit('Wrong Time Reference Provided! Exiting!')
+        
+        evaluatePast(scenario, ref)
 
-def evaluateFuture(scenario):
+def evaluateFuture(scenario, ref):
     if ego_vehicle.init:
         i = 0
         for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
@@ -194,8 +201,14 @@ def evaluateFuture(scenario):
                 j += 1
             i += 1
     else:
-        evaluateFutureEgoPos(scenario)
-        evaluateFuture(scenario)
+        if ref == "future":
+            evaluateFutureEgoPos(scenario)
+        elif ref == "past":
+            evaluatePastEgoPos(scenario)
+        else:
+            sys.exit('Wrong Time Reference Provided! Exiting!')
+
+        evaluateFuture(scenario, ref)
 
 def evaluateFutureEgoPos(scenario):
     initialized_ego_vehicle = False
@@ -213,7 +226,23 @@ def evaluateFutureEgoPos(scenario):
         i += 1
     ego_vehicle.init = initialized_ego_vehicle
 
-def evaluateMap(scenario):
+def evaluatePastEgoPos(scenario):
+    initialized_ego_vehicle = False
+    i = 0
+    for valid in scenario.get_parsed_data()['state/past/valid'].numpy():
+        j = 0
+        for vI in valid:
+            if vI == 1:
+                if scenario.get_parsed_data()['state/is_sdc'].numpy()[i] == 1:
+                    ego_vehicle.global_x = scenario.get_parsed_data()['state/past/x'].numpy()[i][j]
+                    ego_vehicle.global_y = scenario.get_parsed_data()['state/past/y'].numpy()[i][j]
+                    ego_vehicle.yaw = scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j]
+                    initialized_ego_vehicle = True
+            j += 1
+        i += 1
+    ego_vehicle.init = initialized_ego_vehicle
+
+def evaluateMap(scenario, ref):
     if ego_vehicle.init:
         i = 0
         for valid in scenario.get_parsed_data()['roadgraph_samples/valid'].numpy():   
@@ -225,8 +254,14 @@ def evaluateMap(scenario):
                                         )
             i += 1
     else:
-        evaluateFutureEgoPos(scenario)
-        evaluateMap(scenario)
+        if ref == "future":
+            evaluateFutureEgoPos(scenario)
+        elif ref == "past":
+            evaluatePastEgoPos(scenario)
+        else:
+            sys.exit('Wrong Time Reference Provided! Exiting!')
+        
+        evaluateMap(scenario, ref)
 
 def evaluateTafficLightsPast(scenario):
     pass
@@ -256,21 +291,12 @@ def evaluateTafficLightsFuture(scenario):
     #     evaluateFuture(scenario)
     pass
 
-def evaluateAll(scenario):
+def evaluateAll(scenario, ref):
     start_time = time.time()
-    evaluateFutureEgoPos(scenario)
-    print("--- Ego Pos time:    %s s ---" % (time.time() - start_time))
-    start_time = time.time()
-    evaluateMap(scenario)
+    evaluateMap(scenario, ref)
     print("--- Map time:        %s s ---" % (time.time() - start_time))
     start_time = time.time()
-    evaluateTafficLightsPast(scenario)
-    print("--- TL Past time:    %s s ---" % (time.time() - start_time))
-    start_time = time.time()
-    evaluateTafficLightsFuture(scenario)
-    print("--- TL Future time:  %s s ---" % (time.time() - start_time))
-    start_time = time.time()
-    evaluatePast(scenario)
+    evaluatePast(scenario, ref)
     print("--- Past time:       %s s ---" % (time.time() - start_time))
     # start_time = time.time()
     # evaluateFuture(scenario)
@@ -283,8 +309,9 @@ def main():
     scenario = Scenario(data)
     print("Scenario ID: " + scenario.get_scenario_id())
     
+    ref = "past"
     start_time = time.time()
-    evaluateAll(scenario)
+    evaluateAll(scenario, ref)
     print("--- Overall time:    %s s ---" % (time.time() - start_time))
 
     plt.imshow(grid, cmap='nipy_spectral', interpolation='none')
