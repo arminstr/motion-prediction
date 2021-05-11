@@ -10,11 +10,14 @@ This repository contians the code for my submission to the Waymo Motion Predicti
 ### Data conversion
 Information from the dataset is converted into a grid from ego vehicle perspective. The following images are a visualization of this concept. Each time step is added as a new state to the data grid. This way vehicle traces show up in color gradients. :rainbow:
 
-<img src="images/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" height="300" alt="Image of the Rainbow Traces for past second.">
+<div>
+<img src="images/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="300" alt="Image of the Rainbow Traces for past second.">
 <sub><em>Figure 1:</em> Image of the Rainbow Traces for past second stored in the scenario.</sub>
-
-<img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" height="300" alt="Image of the Rainbow Traces for all 9 seconds.">
+</div>
+<div>
+<img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="300" alt="Image of the Rainbow Traces for all 9 seconds.">
 <sub><em>Figure 2:</em> Rainbow Traces for all time steps stored in the sceanrio.</sub>
+</div>
 
 ## References
 <a id="1">[1]</a> 
