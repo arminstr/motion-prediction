@@ -231,29 +231,29 @@ def evaluateMap(scenario):
 def evaluateTafficLightsPast(scenario):
     pass
 def evaluateTafficLightsFuture(scenario):
-    if ego_vehicle.init:
-        i = 0
-        for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
-            j = 0
-            for vI in valid:
-                if vI == 1:
-                    status = 200 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-                    addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
-                                        scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
-                                        status
-                                    )
-                j += 1
-            i += 1
-    else:
-        evaluateFutureEgoPos(scenario)
-        evaluateFuture(scenario)
+    # if ego_vehicle.init:
+    #     i = 0
+    #     for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
+    #         j = 0
+    #         for vI in valid:
+    #             if vI == 1:
+    #                 status = 200 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
+    #                 addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
+    #                                     scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
+    #                                     status
+    #                                 )
+    #             j += 1
+    #         i += 1
+    # else:
+    #     evaluateFutureEgoPos(scenario)
+    #     evaluateFuture(scenario)
     pass
 
 def evaluateAll(scenario):
@@ -267,14 +267,14 @@ def evaluateAll(scenario):
     evaluateTafficLightsPast(scenario)
     print("--- TL Past time:    %s s ---" % (time.time() - start_time))
     start_time = time.time()
-    evaluateTafficLightsPast(scenario)
+    evaluateTafficLightsFuture(scenario)
     print("--- TL Future time:  %s s ---" % (time.time() - start_time))
     start_time = time.time()
     evaluatePast(scenario)
     print("--- Past time:       %s s ---" % (time.time() - start_time))
-    start_time = time.time()
-    evaluateFuture(scenario)
-    print("--- Future time:     %s s ---" % (time.time() - start_time))
+    # start_time = time.time()
+    # evaluateFuture(scenario)
+    # print("--- Future time:     %s s ---" % (time.time() - start_time))
     
     
 def main():
