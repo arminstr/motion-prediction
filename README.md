@@ -12,12 +12,12 @@ Information from the dataset is converted into a grid from ego vehicle perspecti
 
 <table>
   <tr>
-    <img src="images/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" height="500" alt="Image of the Rainbow Traces for past second.">
-    <sub><em>Figure 1:</em> Image of the Rainbow Traces for past second stored in the scenario.</sub>
+    <td><img src="images/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="500" alt="Image of the Rainbow Traces for past second."></td>
+    <td><img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="500" alt="Image of the Rainbow Traces for all 9 seconds."></td>
   </tr>
   <tr>
-    <img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" height="500" alt="Image of the Rainbow Traces for all 9 seconds.">
-    <sub><em>Figure 2:</em> Rainbow Traces for all time steps stored in the sceanrio.</sub>
+    <td><sub><em>Figure 1:</em> Image of the Rainbow Traces for past second stored in the scenario.</sub></td>
+    <td><sub><em>Figure 2:</em> Rainbow Traces for all time steps stored in the sceanrio.</sub></td>
   </tr>
 </table>
 
