@@ -271,7 +271,7 @@ def evaluateAll(scenario, ref):
     evaluatePast(scenario, ref)
     print("--- Past time:       %s s ---" % (time.time() - start_time))
     start_time = time.time()
-    evaluateFuture(scenario)
+    evaluateFuture(scenario, ref)
     print("--- Future time:     %s s ---" % (time.time() - start_time))
     
     
