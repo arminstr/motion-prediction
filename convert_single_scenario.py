@@ -25,11 +25,13 @@ grid = np.zeros((GRID_SIZE, GRID_SIZE))
 grid.fill(0)
 ego_vehicle = EgoVehicle(0,0,0)
 
-def check_grid_coordinate_contained_in_triangle(    point_one,
-                                                    point_two,
-                                                    point_three,
-                                                    coord_x,
-                                                    coord_y):
+def check_grid_coordinate_contained_in_triangle(
+    point_one,
+    point_two,
+    point_three,
+    coord_x,
+    coord_y
+):
     """
     Checks if the corrdinate coord_x, coord_y is in the triangle
     described by point_one, point_two and point_three
@@ -48,7 +50,13 @@ def check_grid_coordinate_contained_in_triangle(    point_one,
 
     return b_is_contained
 
-def get_grid_elements(coord_x, coord_y, bbox_yaw, length, width):
+def get_grid_elements(
+    coord_x,
+    coord_y,
+    bbox_yaw,
+    length,
+    width
+):
     """
     Finds and outputs the grid elements that are part of the passed bounding box.
     """
