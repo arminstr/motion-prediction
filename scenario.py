@@ -1,31 +1,17 @@
-# 
-# Created by Armin Straller 
-#
-
-
-import math
-import os
-import uuid
-import time
-
-from matplotlib import cm
-import matplotlib.animation as animation
-import matplotlib.pyplot as plt
-
-import numpy as np
-from IPython.display import HTML
-import itertools
-import tensorflow as tf
-
-from google.protobuf import text_format
-from waymo_open_dataset.metrics.ops import py_metrics_ops
-from waymo_open_dataset.metrics.python import config_util_py as config_util
-from waymo_open_dataset.protos import motion_metrics_pb2
+"""
+This script contains classes for scenario represenation.
+Created in Mai 2021
+Author: Armin Straller
+"""
 
 from enum import Enum
+import tensorflow as tf
 
-# Unset=0, Vehicle=1, Pedestrian=2, Cyclist=3, Other=4
 class StateType(Enum):
+    """
+    StateType describes the type of an obstacle
+    Unset=0, Vehicle=1, Pedestrian=2, Cyclist=3, Other=4
+    """
     UNSET = 0
     VEHICLE = 1
     PEDESTRIAN = 2
@@ -34,13 +20,18 @@ class StateType(Enum):
     def __int__(self):
         return self.value
 
-# [0, 19]. LaneCenter-Freeway = 1, LaneCenter-SurfaceStreet = 2, LaneCenter-BikeLane = 3, 
-# RoadLine-BrokenSingleWhite = 6, RoadLine-SolidSingleWhite = 7, RoadLine-SolidDoubleWhite = 8, 
-# RoadLine-BrokenSingleYellow = 9, RoadLine-BrokenDoubleYellow = 10, Roadline-SolidSingleYellow = 11, 
-# Roadline-SolidDoubleYellow=12, RoadLine-PassingDoubleYellow = 13, RoadEdgeBoundary = 15, 
-# RoadEdgeMedian = 16, StopSign = 17, Crosswalk = 18, 
-# SpeedBump = 19, other values are unknown types and should not be present.
 class RoadGraphType(Enum):
+    """
+    RoadGraphType describes the type of an road element
+    [0, 19]. LaneCenter-Freeway = 1, LaneCenter-SurfaceStreet = 2,
+    LaneCenter-BikeLane = 3, RoadLine-BrokenSingleWhite = 6,
+    RoadLine-SolidSingleWhite = 7, RoadLine-SolidDoubleWhite = 8,
+    RoadLine-BrokenSingleYellow = 9, RoadLine-BrokenDoubleYellow = 10,
+    Roadline-SolidSingleYellow = 11, Roadline-SolidDoubleYellow=12,
+    RoadLine-PassingDoubleYellow = 13, RoadEdgeBoundary = 15,
+    RoadEdgeMedian = 16, StopSign = 17, Crosswalk = 18,
+    SpeedBump = 19, other values are unknown types and should not be present.
+    """
     UNSET = 0
     LANE_CENTER_FREEWAY = 1
     LANE_CENTER_SURFACE_STREET = 2
@@ -64,6 +55,7 @@ class RoadGraphType(Enum):
         return self.value
 
 class EgoVehicle:
+    """ Stores the information of the ego vehicle. """
     global_x = 0
     global_y = 0
     yaw = 0
@@ -75,9 +67,14 @@ class EgoVehicle:
     def __repr__(self):
         return "EgoVehicle"
     def __str__(self):
-        return "EgoVehicle: " + str(self.global_x) + ", " + str(self.global_y) + ", " + str(self.yaw)
+        return "EgoVehicle: " + str(self.global_x) + ", " + \
+        str(self.global_y) + ", " + str(self.yaw)
 
 class Scenario:
+    """
+    Stores the information of the entire scenario.
+    This includes the features as defined by waymo tf_example proto.
+    """
     # Example field definition
     __scenario_features = {
         'scenario/id':
@@ -149,18 +146,20 @@ class Scenario:
 
     __d = {}
     __p = {}
-    __scenarioId = ''
+    __scenario_id = ''
 
     def __init__(self, data):
         self.__d = data
         self.__p = tf.io.parse_single_example(self.__d, self.__features_description)
-        self.__scenarioId = self.__getScenarioIdFromData()
-    
-    def __getScenarioIdFromData(self):
+        self.__scenario_id = self.__get_scenario_id_from_data()
+
+    def __get_scenario_id_from_data(self):
         return self.__p['scenario/id'].numpy()[0].decode('utf-8')
 
     def get_scenario_id(self):
-        return self.__scenarioId
+        """ Returns the identifier of the scenario. """
+        return self.__scenario_id
 
     def get_parsed_data(self):
+        """ Returns the parsed data. """
         return self.__p
