@@ -63,6 +63,24 @@ class RoadGraphType(Enum):
     def __int__(self):
         return self.value
 
+# The state of each traffic light at each time step.
+# Unknown = 0, Arrow_Stop = 1, Arrow_Caution = 2, 
+# Arrow_Go = 3, Stop = 4, Caution = 5, Go = 6, 
+# Flashing_Stop = 7, Flashing_Caution = 8
+class TrafficLightStateType(Enum):
+    UNKNOWN = 0
+    ARROW_STOP = 1
+    ARROW_CAUTION = 2
+    ARROW_GO = 3
+    STOP = 4
+    CAUTION = 5
+    GO = 6
+    FLASHING_STOP = 7
+    FLASHING_CAUTION = 8
+
+    def __int__(self):
+        return self.value
+
 class EgoVehicle:
     global_x = 0
     global_y = 0
@@ -76,6 +94,24 @@ class EgoVehicle:
         return "EgoVehicle"
     def __str__(self):
         return "EgoVehicle: " + str(self.global_x) + ", " + str(self.global_y) + ", " + str(self.yaw)
+
+class MapElement:
+    xy = (0,0)
+    type = 0
+    id = 0
+    traffic_light = []
+    def __init__(self, xy, type, id):
+        self.xy = xy
+        self.type = type
+        self.id = id
+    def __str__(self):
+        return "MapElement: " + str(self.xy) + ", " + str(self.type) + ", " + str(self.id) + ", " + str(self.traffic_light)
+
+class Map:
+    elements = []
+    init = False
+    def add(self, element):
+        self.elements.append(element)
 
 class Scenario:
     # Example field definition
@@ -193,6 +229,8 @@ class Scenario:
             tf.io.FixedLenFeature([1, 16], tf.float32, default_value=None),
         'traffic_light_state/past/state':
             tf.io.FixedLenFeature([10, 16], tf.int64, default_value=None),
+        'traffic_light_state/past/id':
+            tf.io.FixedLenFeature([10, 16], tf.int64, default_value=None),
         'traffic_light_state/past/valid':
             tf.io.FixedLenFeature([10, 16], tf.int64, default_value=None),
         'traffic_light_state/past/x':
@@ -201,6 +239,18 @@ class Scenario:
             tf.io.FixedLenFeature([10, 16], tf.float32, default_value=None),
         'traffic_light_state/past/z':
             tf.io.FixedLenFeature([10, 16], tf.float32, default_value=None),
+        'traffic_light_state/future/state':
+            tf.io.FixedLenFeature([80, 16], tf.int64, default_value=None),
+        'traffic_light_state/future/id':
+            tf.io.FixedLenFeature([80, 16], tf.int64, default_value=None),
+        'traffic_light_state/future/valid':
+            tf.io.FixedLenFeature([80, 16], tf.int64, default_value=None),
+        'traffic_light_state/future/x':
+            tf.io.FixedLenFeature([80, 16], tf.float32, default_value=None),
+        'traffic_light_state/future/y':
+            tf.io.FixedLenFeature([80, 16], tf.float32, default_value=None),
+        'traffic_light_state/future/z':
+            tf.io.FixedLenFeature([80, 16], tf.float32, default_value=None),
     }
     __features_description = {}
     __features_description.update(__scenario_features)

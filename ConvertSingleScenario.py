@@ -22,17 +22,18 @@ from waymo_open_dataset.metrics.ops import py_metrics_ops
 from waymo_open_dataset.metrics.python import config_util_py as config_util
 from waymo_open_dataset.protos import motion_metrics_pb2
 
-from scenario import RoadGraphType, Scenario, StateType, EgoVehicle
+from scenario import Map, MapElement, RoadGraphType, Scenario, StateType, EgoVehicle, TrafficLightStateType
 
 FILENAME = 'data/uncompressed_tf_example_training_training_tfexample.tfrecord-00000-of-01000'
 
-GRID_SIZE = 256
-GRID_RESOLUTION = 0.5 # meters
+GRID_SIZE = 128
+GRID_RESOLUTION = 1.0 # meters
 GRID_RESOLUTION_INV = (1/GRID_RESOLUTION)
 
 grid = np.zeros((GRID_SIZE, GRID_SIZE))
 grid.fill(0)
 ego_vehicle = EgoVehicle(0,0,0)
+map = Map()
 
 def gridElementContainedIn2DTriangle(v1, v2, v3, x, y):
     isContained = False
@@ -149,12 +150,19 @@ def addStateToGrid(x, y, bbox_yaw, length, width, status_id):
     for e in elements:
         grid[int(e[0])][int(e[1])] = status_id
 
-def addRoadGraphSampleToGrid(xyz, sample_type):
+def addRoadGraphSampleToMap(xyz, id, sample_type):
     # do a rasterization for the RoadGraphSample
     elements = getGridElement(xyz[0], xyz[1])
     elements = convertGlobalToVehicleGridFrame(elements)
     for e in elements:
-        grid[int(e[0])][int(e[1])] = sample_type
+        map_element = MapElement(e, sample_type, id)
+        map.add(map_element)
+
+def addMapElementToGrid(element):
+    tl_value = 0
+    if len(element.traffic_light) > 0:
+        tl_value = element.traffic_light[0]
+    grid[int(element.xy[0])][int(element.xy[1])] = tl_value
 
 def evaluatePast(scenario, ref):
     if ego_vehicle.init:
@@ -164,6 +172,8 @@ def evaluatePast(scenario, ref):
             for vI in valid:
                 if vI == 1:
                     status = 100 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
+                    is_tracks_to_predict = scenario.get_parsed_data()['state/tracks_to_predict'].numpy()[i]
+                    print(is_tracks_to_predict)
                     addStateToGrid  (   scenario.get_parsed_data()['state/past/x'].numpy()[i][j],
                                         scenario.get_parsed_data()['state/past/y'].numpy()[i][j],
                                         scenario.get_parsed_data()['state/past/bbox_yaw'].numpy()[i][j],
@@ -249,7 +259,8 @@ def evaluateMap(scenario, ref):
             if valid == 1:
                 roadgraph_type = 10 + int(RoadGraphType(scenario.get_parsed_data()['roadgraph_samples/type'].numpy()[i]))
                 roadgraph_id = int(scenario.get_parsed_data()['roadgraph_samples/id'].numpy()[i])
-                addRoadGraphSampleToGrid(   scenario.get_parsed_data()['roadgraph_samples/xyz'].numpy()[i],
+                addRoadGraphSampleToMap(   scenario.get_parsed_data()['roadgraph_samples/xyz'].numpy()[i],
+                                            roadgraph_id,
                                             roadgraph_type
                                         )
             i += 1
@@ -263,45 +274,74 @@ def evaluateMap(scenario, ref):
         
         evaluateMap(scenario, ref)
 
-def evaluateTafficLightsPast(scenario):
-    pass
-def evaluateTafficLightsFuture(scenario):
-    # if ego_vehicle.init:
-    #     i = 0
-    #     for valid in scenario.get_parsed_data()['state/future/valid'].numpy():    
-    #         j = 0
-    #         for vI in valid:
-    #             if vI == 1:
-    #                 status = 200 + int(StateType(scenario.get_parsed_data()['state/type'].numpy()[i]))*10 + j
-    #                 addStateToGrid  (   scenario.get_parsed_data()['state/future/x'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/y'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/bbox_yaw'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/length'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/width'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/height'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/vel_yaw'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/velocity_x'].numpy()[i][j],
-    #                                     scenario.get_parsed_data()['state/future/velocity_y'].numpy()[i][j],
-    #                                     status
-    #                                 )
-    #             j += 1
-    #         i += 1
-    # else:
-    #     evaluateFutureEgoPos(scenario)
-    #     evaluateFuture(scenario)
-    pass
+def evaluateTafficLightsPast(scenario, ref):
+    if ego_vehicle.init:
+        i = 0
+        for valid in scenario.get_parsed_data()['traffic_light_state/past/valid'].numpy():    
+            j = 0
+            for vI in valid:
+                if vI == 1:
+                    status = int(TrafficLightStateType(scenario.get_parsed_data()['traffic_light_state/past/state'].numpy()[i][j]))
+                    lane_id = scenario.get_parsed_data()['traffic_light_state/past/id'].numpy()[i][j]
+                    for e in map.elements:
+                        if e.id == lane_id:
+                            e.traffic_light.append(status)
+                        addMapElementToGrid(e)
+                    
+                j += 1
+            i += 1
+    else:
+        if ref == "future":
+            evaluateFutureEgoPos(scenario)
+        elif ref == "past":
+            evaluatePastEgoPos(scenario)
+        else:
+            sys.exit('Wrong Time Reference Provided! Exiting!')
+        
+        evaluateTafficLightsPast(scenario, ref)
+
+def evaluateTafficLightsFuture(scenario, ref):
+    if ego_vehicle.init:
+        i = 0
+        for valid in scenario.get_parsed_data()['traffic_light_state/future/valid'].numpy():    
+            j = 0
+            for vI in valid:
+                if vI == 1:
+                    status = 500 + int(TrafficLightStateType(scenario.get_parsed_data()['traffic_light_state/future/state'].numpy()[i][j]))
+                    lane_id = scenario.get_parsed_data()['traffic_light_state/future/id'].numpy()[i][j]
+                    for e in map.elements:
+                        if e.id == lane_id:
+                            e.traffic_light.append(status)
+                        addMapElementToGrid(e)
+                j += 1
+            i += 1
+    else:
+        if ref == "future":
+            evaluateFutureEgoPos(scenario)
+        elif ref == "past":
+            evaluatePastEgoPos(scenario)
+        else:
+            sys.exit('Wrong Time Reference Provided! Exiting!')
+        
+        evaluateTafficLightsFuture(scenario, ref)
 
 def evaluateAll(scenario, ref):
     start_time = time.time()
     evaluateMap(scenario, ref)
     print("--- Map time:        %s s ---" % (time.time() - start_time))
+    # start_time = time.time()
+    # evaluateTafficLightsPast(scenario, ref)
+    # print("--- TrLi Past time:  %s s ---" % (time.time() - start_time))
+    # start_time = time.time()
+    # evaluateTafficLightsFuture(scenario, ref)
+    # print("--- TrLi Fut time:   %s s ---" % (time.time() - start_time))
+    
     start_time = time.time()
     evaluatePast(scenario, ref)
     print("--- Past time:       %s s ---" % (time.time() - start_time))
-    # start_time = time.time()
-    # evaluateFuture(scenario)
-    # print("--- Future time:     %s s ---" % (time.time() - start_time))
-    
+    start_time = time.time()
+    evaluateFuture(scenario, ref)
+    print("--- Future time:     %s s ---" % (time.time() - start_time))
     
 def main():
     dataset = tf.data.TFRecordDataset(FILENAME, compression_type='')
@@ -309,12 +349,13 @@ def main():
     scenario = Scenario(data)
     print("Scenario ID: " + scenario.get_scenario_id())
     
-    ref = "past"
+    ref = "future"
     start_time = time.time()
     evaluateAll(scenario, ref)
     print("--- Overall time:    %s s ---" % (time.time() - start_time))
 
     plt.imshow(grid, cmap='nipy_spectral', interpolation='none')
+    plt.colorbar()
     plt.show()
 
 if __name__ == "__main__":
