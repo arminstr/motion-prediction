@@ -1,8 +1,8 @@
-# Colab Open Dataset Tutorial by Waymo 
-#
-# https://colab.research.google.com/github/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_motion.ipynb
-#
-# Not licensed according to this repsitory
+"""
+Colab Open Dataset Tutorial by Waymo 
+https://colab.research.google.com/github/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_motion.ipynb
+Not licensed according to this repsitory
+"""
 
 import math
 import os
@@ -513,7 +513,7 @@ class MotionMetrics(tf.keras.metrics.Metric):
     self._object_type = []
     self._metrics_config = config
 
-  def reset_state():
+  def reset_state(self):
     self._ground_truth_trajectory = []
     self._ground_truth_is_valid = []
     self._prediction_trajectory = []
