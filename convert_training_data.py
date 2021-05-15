@@ -5,6 +5,8 @@ Author: Armin Straller
 Email: armin.straller@hs-augsburg.de
 """
 import time
+import os
+import shutil
 from os import walk
 import numpy as np
 import pylab as plt
@@ -15,7 +17,7 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-PATHNAME = 'data'
+PATHNAME = '/media/dev/data/waymo_motion/training'
 
 seq = tf.keras.Sequential(
     [
@@ -52,9 +54,24 @@ def get_scenarios_from_folder(path):
     _, _, filenames = next(walk(path))
     scenario_converter = tf_example_scenario(256, 0.5)
     grid_streams = {}
+    access_rights = 0o755
+    print(path)
     for filename in filenames:
         start_time = time.time()
-        grid_streams[path] = (scenario_converter.load('data/' + filename))
+        filename_begin, file_ending = filename.split('.')
+        file_path = path + '/' + file_ending
+        try:
+            if not os.path.exists(file_path):
+                os.makedirs(file_path, access_rights)
+                grid_streams[file_ending] = (scenario_converter.load(path + '/' + filename))
+                i = 0
+                for stream in grid_streams[file_ending]:
+                    plt.imsave(file_path + '/' + file_ending + '_' + str(i) + '.png', stream)
+                    i += 1
+        except OSError:
+            print ("Creation of the directory %s failed" % file_path)
+        else:
+            print ("Successfully created the directory %s" % file_path)
         print(">> Time to open " + filename + ":    %s s"\
         % (time.time() - start_time))
     return grid_streams, len(grid_streams)
