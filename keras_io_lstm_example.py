@@ -15,6 +15,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pylab as plt
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+  tf.config.experimental.set_memory_growth(gpu, True)
 
 seq = tf.keras.Sequential(
     [
@@ -105,12 +108,13 @@ def generate_movies(n_samples=1200, n_frames=15):
 epochs = 200  # In practice, you would need hundreds of epochs.
 
 noisy_movies, shifted_movies = generate_movies(n_samples=1200)
+print(noisy_movies[0])
 seq.fit(
     noisy_movies[:1000],
     shifted_movies[:1000],
     batch_size=10,
     epochs=epochs,
-    verbose=2,
+    verbose=1,
     validation_split=0.1,
 )
 
