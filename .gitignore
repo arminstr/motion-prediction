@@ -1,4 +1,5 @@
 data/
 training_checkpoints/
+logs/
 __pycache__/
 *.avi

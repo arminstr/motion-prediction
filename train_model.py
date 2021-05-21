@@ -61,10 +61,11 @@ seq = tf.keras.Sequential(
 
 seq.compile(loss="binary_crossentropy", optimizer="adadelta", metrics='accuracy')
 
-def load_scenarios(n_samples, n_frames=10):
+def load_scenarios(n_samples):
     """
     load scenarios that were saved using convert_training_data.py
     """
+    n_frames=10
     frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
     label_frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
     _, directories, _ = next(walk(PATHNAME))
@@ -80,17 +81,21 @@ def load_scenarios(n_samples, n_frames=10):
             temp_frames[int(filename_index)] = image/255
         
         # start at index one since frame 0 is empty
-        for shift_index in range(1, DATA_LENGTH - n_frames):
-            frames[sample_index] = temp_frames[shift_index:shift_index+n_frames]
-            label_frames[sample_index] = temp_frames[shift_index+1:shift_index+n_frames+1]
-            sample_index += 1
-            if sample_index >= n_samples:
-                return frames, label_frames
+        # for shift_index in range(1, DATA_LENGTH - n_frames):
+        frames[sample_index] = temp_frames[:n_frames]
+        label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
+        for j in range(n_frames):
+            label_frame[j] = temp_frames[14 + j * 5]
+        label_frames[sample_index] = label_frame
+        
+        sample_index += 1
+        if sample_index >= n_samples:
+            return frames, label_frames
         i += 1
 
 epochs = 100  # In practice, you would need hundreds of epochs.
-batch_size = 1
-n_samples = 1000
+batch_size = 4
+n_samples = 90
 
 past_frames, label_frames = load_scenarios(n_samples)
 
@@ -103,12 +108,13 @@ checkpoint_path = "training_checkpoints/cp-{epoch:04d}.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # Create a callback that saves the model's weights
-cp_callback = tf.keras.callbacks.ModelCheckpoint(
-    filepath=checkpoint_path, 
-    verbose=1, 
-    save_weights_only=True,
-    save_freq=500*batch_size)
-
+seq_callbacks = [
+    tf.keras.callbacks.ModelCheckpoint( filepath=checkpoint_path, 
+                                        verbose=0, 
+                                        save_weights_only=True, 
+                                        save_freq=batch_size),
+    tf.keras.callbacks.TensorBoard(log_dir='./logs'),
+]
 
 # This may generate warnings related to saving the state of the optimizer.
 # These warnings (and similar warnings throughout this notebook)
@@ -124,5 +130,5 @@ seq.fit(
     epochs=epochs,
     verbose=1,
     validation_split=0.1,
-    callbacks=[cp_callback]
+    callbacks=seq_callbacks
 )
