@@ -25,19 +25,19 @@ GRID_SIZE = 128
 DATA_LENGTH = 90
 
 tf.keras.backend.clear_session()
-# if tf.config.list_physical_devices('GPU'):
-#     physical_devices = tf.config.list_physical_devices('GPU')
-#     tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
-#     tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=4000)])
+if tf.config.list_physical_devices('GPU'):
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
+    tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=6000)])
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-for gpu in gpus:
-  tf.config.experimental.set_memory_growth(gpu, True)
+# gpus = tf.config.experimental.list_physical_devices('GPU')
+# for gpu in gpus:
+#   tf.config.experimental.set_memory_growth(gpu, True)
 
 seq = tf.keras.Sequential(
     [
         tf.keras.Input(
-            shape=(10, GRID_SIZE, GRID_SIZE, 4), dtype="float32"
+            shape=(10, GRID_SIZE, GRID_SIZE, 1), dtype="float32"
         ),
         layers.ConvLSTM2D(
             filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
@@ -56,7 +56,7 @@ seq = tf.keras.Sequential(
         ),
         layers.BatchNormalization(),
         layers.Conv3D(
-            filters=4, kernel_size=(3, 3, 3), activation="sigmoid", padding="same"
+            filters=1, kernel_size=(3, 3, 3), activation="sigmoid", padding="same"
         ),
     ]
 )
@@ -68,16 +68,17 @@ def load_scenarios(n_samples, path_name):
     load scenarios that were saved using convert_training_data.py
     """
     n_frames=10
-    frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
-    label_frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
+    frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
+    label_frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
     _, directories, _ = next(walk(path_name))
     i = 0
     sample_index = 0
     for directory in directories:
         _, _, filenames = next(walk(path_name + '/' + directory))
-        temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
+        temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
         for filename in filenames:
-            image = imageio.imread(path_name + '/' + directory + '/' + filename)
+            image = imageio.imread(path_name + '/' + directory + '/' + filename, as_gray=True)
+            image = np.reshape(image, (GRID_SIZE,GRID_SIZE,1))
             filename_sections = filename.split('_')
             filename_index, _ = filename_sections[-1].split('.')
             temp_frames[int(filename_index)] = image/255
@@ -85,7 +86,7 @@ def load_scenarios(n_samples, path_name):
         # start at index one since frame 0 is empty
         # for shift_index in range(1, DATA_LENGTH - n_frames):
         frames[sample_index] = temp_frames[:n_frames]
-        label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
+        label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
         for j in range(n_frames):
             label_frame[j] = temp_frames[14 + j * 5]
         label_frames[sample_index] = label_frame
@@ -120,7 +121,7 @@ seq_callbacks = [
                                         save_weights_only=True, 
                                         save_freq=batch_size*10),
     tf.keras.callbacks.TensorBoard(     log_dir=log_dir, 
-                                        update_freq=batch_size*10,
+                                        update_freq=batch_size,
                                         histogram_freq=1),
 ]
 
