@@ -9,6 +9,7 @@ import os
 from os import walk
 import numpy as np
 import imageio
+import datetime
 
 import tensorflow as tf
 tf.config.optimizer.set_experimental_options({'layout_optimizer': False})
@@ -18,7 +19,8 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-PATHNAME = '/media/dev/data/waymo_motion/training'
+PATHNAME_TRAINING = '/media/dev/data/waymo_motion/training'
+PATHNAME_VALIDATION = '/media/dev/data/waymo_motion/validation'
 GRID_SIZE = 128
 DATA_LENGTH = 90
 
@@ -38,19 +40,19 @@ seq = tf.keras.Sequential(
             shape=(10, GRID_SIZE, GRID_SIZE, 4), dtype="float32"
         ),
         layers.ConvLSTM2D(
-            filters=32, kernel_size=(3, 3), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
         layers.ConvLSTM2D(
-            filters=32, kernel_size=(3, 3), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
         layers.ConvLSTM2D(
-            filters=32, kernel_size=(3, 3), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
         layers.ConvLSTM2D(
-            filters=32, kernel_size=(3, 3), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
         layers.Conv3D(
@@ -61,21 +63,21 @@ seq = tf.keras.Sequential(
 
 seq.compile(loss="binary_crossentropy", optimizer="adadelta", metrics='accuracy')
 
-def load_scenarios(n_samples):
+def load_scenarios(n_samples, path_name):
     """
     load scenarios that were saved using convert_training_data.py
     """
     n_frames=10
     frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
     label_frames = np.zeros((n_samples, n_frames, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
-    _, directories, _ = next(walk(PATHNAME))
+    _, directories, _ = next(walk(path_name))
     i = 0
     sample_index = 0
     for directory in directories:
-        _, _, filenames = next(walk(PATHNAME + '/' + directory))
+        _, _, filenames = next(walk(path_name + '/' + directory))
         temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 4), dtype=np.float32)
         for filename in filenames:
-            image = imageio.imread(PATHNAME + '/' + directory + '/' + filename)
+            image = imageio.imread(path_name + '/' + directory + '/' + filename)
             filename_sections = filename.split('_')
             filename_index, _ = filename_sections[-1].split('.')
             temp_frames[int(filename_index)] = image/255
@@ -87,33 +89,39 @@ def load_scenarios(n_samples):
         for j in range(n_frames):
             label_frame[j] = temp_frames[14 + j * 5]
         label_frames[sample_index] = label_frame
-        
+
         sample_index += 1
         if sample_index >= n_samples:
             return frames, label_frames
         i += 1
 
-epochs = 100  # In practice, you would need hundreds of epochs.
-batch_size = 4
-n_samples = 90
+epochs = 200  # In practice, you would need hundreds of epochs.
+batch_size = 1
+n_samples_train = 1000
+n_samples_val = 150
 
-past_frames, label_frames = load_scenarios(n_samples)
+past_frames_train, label_frames_train = load_scenarios(n_samples_train, PATHNAME_TRAINING)
+past_frames_validation, label_frames_validation = load_scenarios(n_samples_val, PATHNAME_TRAINING)
 
-print("past frames", past_frames[:n_samples].shape)
-print("label frames", label_frames[:n_samples].shape)
+print("past frames", past_frames_train[:n_samples_train].shape)
+print("label frames", label_frames_train[:n_samples_train].shape)
 seq.summary()
 
 # Include the epoch in the file name (uses `str.format`)
 checkpoint_path = "training_checkpoints/cp-{epoch:04d}.ckpt"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 
+log_dir = "./logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
 # Create a callback that saves the model's weights
 seq_callbacks = [
     tf.keras.callbacks.ModelCheckpoint( filepath=checkpoint_path, 
                                         verbose=0, 
                                         save_weights_only=True, 
-                                        save_freq=batch_size),
-    tf.keras.callbacks.TensorBoard(log_dir='./logs'),
+                                        save_freq=batch_size*10),
+    tf.keras.callbacks.TensorBoard(     log_dir=log_dir, 
+                                        update_freq=batch_size*10,
+                                        histogram_freq=1),
 ]
 
 # This may generate warnings related to saving the state of the optimizer.
@@ -122,13 +130,14 @@ seq_callbacks = [
 
 seq.save_weights(checkpoint_path.format(epoch=0))
 
-
 seq.fit(
-    past_frames[:n_samples-100],
-    label_frames[:n_samples-100],
+    past_frames_train,
+    label_frames_train,
+    shuffle=True,
     batch_size=batch_size,
     epochs=epochs,
     verbose=1,
-    validation_split=0.1,
+    validation_data = (past_frames_validation, label_frames_validation),
+    # validation_split=0.1,
     callbacks=seq_callbacks
 )

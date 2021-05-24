@@ -115,7 +115,12 @@ print("Restored model, accuracy: {:5.2f}%".format(100 * acc))
 
 test_index = 100
 test_frames = past_frames[np.newaxis, test_index]
+print(test_frames.shape)
+for frame in test_frames[0]:
+    plt.imshow(frame)
+    plt.show()
 test_frames = seq.predict(test_frames)
+print(test_frames.shape)
 for frame in test_frames[0]:
     plt.imshow(frame)
     plt.show()

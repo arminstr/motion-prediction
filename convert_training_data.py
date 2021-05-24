@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-PATHNAME = '/media/dev/data/waymo_motion/training'
-
 def get_scenarios_from_folder(path):
     """
     Uses the single scenario converter to convert all files in a directory.
@@ -42,5 +40,12 @@ def get_scenarios_from_folder(path):
         % (time.time() - start_time))
     return grid_streams, len(grid_streams)
 
+PATHNAME = '/media/dev/data/waymo_motion/training'
 grid_streams_dict, n_samples = get_scenarios_from_folder(PATHNAME)
+print(PATHNAME)
+print("Received ", n_samples, " samples.")
+
+PATHNAME = '/media/dev/data/waymo_motion/validation'
+grid_streams_dict, n_samples = get_scenarios_from_folder(PATHNAME)
+print(PATHNAME)
 print("Received ", n_samples, " samples.")
