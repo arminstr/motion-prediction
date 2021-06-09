@@ -49,3 +49,4 @@ PATHNAME = '/media/dev/data/waymo_motion/validation'
 grid_streams_dict, n_samples = get_scenarios_from_folder(PATHNAME)
 print(PATHNAME)
 print("Received ", n_samples, " samples.")
+

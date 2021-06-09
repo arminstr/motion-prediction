@@ -30,17 +30,13 @@ if tf.config.list_physical_devices('GPU'):
     tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
     tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=6000)])
 
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# for gpu in gpus:
-#   tf.config.experimental.set_memory_growth(gpu, True)
-
 seq = tf.keras.Sequential(
     [
         tf.keras.Input(
             shape=(10, GRID_SIZE, GRID_SIZE, 1), dtype="float32"
         ),
         layers.ConvLSTM2D(
-            filters=128, kernel_size=(5, 5), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
         layers.ConvLSTM2D(
@@ -48,51 +44,21 @@ seq = tf.keras.Sequential(
         ),
         layers.BatchNormalization(),
         layers.ConvLSTM2D(
-            filters=128, kernel_size=(1, 1), padding="same", return_sequences=True
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
         ),
         layers.BatchNormalization(),
-        layers.Conv3D(
-            filters=1, kernel_size=(3, 3, 3), activation="sigmoid", padding="same"
+        layers.ConvLSTM2D(
+            filters=128, kernel_size=(3, 3), padding="same", return_sequences=True
+        ),
+        layers.BatchNormalization(),
+        layers.Conv2D(
+            filters=1, kernel_size=(3, 3), activation="sigmoid", padding="same"
         ),
     ]
 )
 
+seq.compile(loss="mean_squared_logarithmic_error", optimizer="adadelta", metrics=['mse'])
 
-def only_bright_pixels_custom(y_true, y_pred):
-    # y_true = y_true[0]
-    # print(y_true)
-    # y_pred = y_pred[0]
-    # print(y_pred)
-
-    threshold = tf.reduce_max(y_true) / 2
-    mask_vehicle = tf.math.greater(y_true, threshold)
-    mask_map = tf.math.less(y_true, threshold)
-    # mask = tf.expand_dims(tf.cast(mask, dtype=tf.float32), axis=len(mask.shape))
-    # print("mask:", mask)
-    mask_vehicle = tf.cast(mask_vehicle, dtype=tf.float32)
-    mask_map = tf.cast(mask_map, dtype=tf.float32)
-    y_true_masked_vehicle = mask_vehicle * y_true
-    y_pred_masked_vehicle =  mask_vehicle * y_pred
-
-    # set the true value to zero. this way all other pixels then the vehicles will go black
-    y_true_masked_map = mask_map * 0.0
-    y_pred_masked_map =  mask_map * y_pred
-
-    squared_difference_vehicle = tf.square(y_true_masked_vehicle - y_pred_masked_vehicle)
-    squared_difference_map = tf.square(y_true_masked_map - y_pred_masked_map)
-
-    return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.9 + tf.reduce_mean(squared_difference_map, axis=1) * 0.1
-
-
-# checkpoint_path = "training_checkpoints/20210527-073458/cp-0000.ckpt.index"
-# checkpoint_dir = os.path.dirname(checkpoint_path)
-seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
-
-# latest = tf.train.latest_checkpoint(checkpoint_dir)
-# print(latest)
-
-# Loads the weights
-# seq.load_weights(latest)
 
 def load_scenarios(n_samples, path_name):
     """
@@ -114,14 +80,8 @@ def load_scenarios(n_samples, path_name):
             filename_index, _ = filename_sections[-1].split('.')
             temp_frames[int(filename_index)] = image/255
 
-        # start at index one since frame 0 is empty
-        # for shift_index in range(1, DATA_LENGTH - n_frames):
         frames[sample_index] = temp_frames[0:n_frames]
-        label_frames[sample_index] = temp_frames[1:n_frames+1]
-        # label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
-        # for j in range(n_frames):
-        #     label_frame[j] = temp_frames[14 + j * 5]
-        # label_frames[sample_index] = label_frame
+        label_frames[sample_index] = temp_frames[n_frames+1]
 
         sample_index += 1
         if sample_index >= n_samples:
