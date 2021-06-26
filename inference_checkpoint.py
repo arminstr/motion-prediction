@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-scenario_name = 'tfrecord-00010-of-01000'
+scenario_name = 'tfrecord-00100-of-01000'
 
 PATHNAME = '/media/dev/data/waymo_motion/training/' + scenario_name
 GRID_SIZE = 128
@@ -30,8 +30,6 @@ tf.keras.backend.clear_session()
 gpus = tf.config.experimental.list_physical_devices('GPU')
 for gpu in gpus:
   tf.config.experimental.set_memory_growth(gpu, True)
-
-
 
 # Create a basic model instance
 seq = tf.keras.Sequential(
@@ -85,7 +83,7 @@ def only_bright_pixels_custom(y_true, y_pred):
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
 
 # Include the epoch in the file name (uses `str.format`)
-checkpoint_path = "training_checkpoints/20210607-155150/cp-0000.ckpt.index"
+checkpoint_path = "training_checkpoints/20210622-181536/cp-0200.ckpt.index"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 latest = tf.train.latest_checkpoint(checkpoint_dir)
 # Loads the weights
@@ -98,7 +96,7 @@ print("Starting evaluation... ")
 def postprocess_objects(frame):
     reduced_max = tf.reduce_max(frame)
     reduced_mean = tf.reduce_mean(frame)
-    threshold_objects = (reduced_max + reduced_mean) / 3
+    threshold_objects = (reduced_max + reduced_mean) / 2
     mask_objects = tf.math.greater(frame, threshold_objects)
     mask_objects = tf.cast(mask_objects, dtype=tf.float32)
     return mask_objects * 1
@@ -219,6 +217,7 @@ def predict_future_frame(frames):
     plt.imshow(frames[0, 8])
     plt.subplot(1, 5, 4)
     plt.imshow(frames[0, 9])
+    plt.show()
 
     corr_img = np.zeros((4, 64, 64, 1))
     corr_img[0] = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 0:64], postprocess_map(frames[0, 9])[0:64, 0:64])
@@ -229,9 +228,6 @@ def predict_future_frame(frames):
     unravel_max = np.zeros((4, 3))
     for i in range(0, 4):
         unravel_max[i] = np.unravel_index(np.argmax(corr_img[i]), corr_img[i].shape)
-
-    for unravel in unravel_max:
-        print("map shifted to: ", unravel) 
 
     center_offset = 32
     center = np.array((center_offset, center_offset, 0))
@@ -248,32 +244,68 @@ def predict_future_frame(frames):
     FILEPATH = '/media/dev/data/waymo_motion/training/training_tfexample.' + scenario_name
 
     scenario_converter = tf_example_scenario(128, 1)
-    grid = scenario_converter.load_map_at(FILEPATH, map_offset, 0)
-    grid = np.expand_dims(grid, axis=2)/255
+    map = scenario_converter.load_map_at(FILEPATH, map_offset, 0)
+    map = np.expand_dims(map, axis=2)/255
 
     objects = postprocess_objects(pred_frames[0, 9]).numpy()
-    prediction = np.add(grid, objects)
+
+    # use the section below to mask out objetcs from the map
+    threshold = tf.reduce_max(objects) / 2
+    mask_objects = tf.math.less(objects, threshold)
+    mask_objects = tf.cast(mask_objects, dtype=tf.float32)
+    map_masked = mask_objects * map
+
+    prediction = np.add(map_masked, objects)
 
     plt.subplot(1, 5, 5)
     plt.imshow(prediction)
-    plt.show()
     return prediction
 
 input_frames = load_scenario()
-# good examples: 50, 200, 500
 frames = input_frames[np.newaxis, 0]
-for frame in frames[0]:
-    plt.imshow(frame)
-    plt.show()
-pred = predict_future_frame(frames)
-plt.imshow(pred)
-plt.show()
+
+pred = np.zeros((70, 128, 128, 1))
+pred[0] = predict_future_frame(frames)
+
 frames = np.zeros((10, 128, 128, 1))
 frames[0:9] = input_frames[0][1:10]
-frames[9] = pred
-for frame in frames:
-    plt.imshow(frame)
-    plt.show()
+frames[9] = pred[0]
 
 frames = np.expand_dims(frames, axis=0)
-pred_frame = predict_future_frame(frames)
+pred[1] = predict_future_frame(frames)
+
+frames = np.zeros((10, 128, 128, 1))
+frames[0:8] = input_frames[0][2:10]
+frames[8:10] = pred[0:2]
+
+frames = np.expand_dims(frames, axis=0)
+pred[2] = predict_future_frame(frames)
+
+frames = np.zeros((10, 128, 128, 1))
+frames[0:7] = input_frames[0][3:10]
+frames[7:10] = pred[0:3]
+
+frames = np.expand_dims(frames, axis=0)
+pred[3] = predict_future_frame(frames)
+
+frames = np.zeros((10, 128, 128, 1))
+frames[0:6] = input_frames[0][4:10]
+frames[6:10] = pred[0:4]
+
+frames = np.expand_dims(frames, axis=0)
+pred[4] = predict_future_frame(frames)
+
+frames = np.zeros((10, 128, 128, 1))
+frames[0:5] = input_frames[0][5:10]
+frames[5:10] = pred[0:5]
+
+frames = np.expand_dims(frames, axis=0)
+pred[5] = predict_future_frame(frames)
+
+frames = np.zeros((10, 128, 128, 1))
+frames[0:4] = input_frames[0][6:10]
+frames[4:10] = pred[0:6]
+
+frames = np.expand_dims(frames, axis=0)
+pred[6] = predict_future_frame(frames)
+

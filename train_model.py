@@ -28,11 +28,8 @@ tf.keras.backend.clear_session()
 if tf.config.list_physical_devices('GPU'):
     physical_devices = tf.config.list_physical_devices('GPU')
     tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
-    tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=6000)])
+    # tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=6000)])
 
-# gpus = tf.config.experimental.list_physical_devices('GPU')
-# for gpu in gpus:
-#   tf.config.experimental.set_memory_growth(gpu, True)
 
 seq = tf.keras.Sequential(
     [
@@ -59,11 +56,7 @@ seq = tf.keras.Sequential(
 
 
 def only_bright_pixels_custom(y_true, y_pred):
-    # y_true = y_true[0]
-    # print(y_true)
-    # y_pred = y_pred[0]
-    # print(y_pred)
-
+ 
     threshold = tf.reduce_max(y_true) / 2
     mask_vehicle = tf.math.greater(y_true, threshold)
     mask_map = tf.math.less(y_true, threshold)
@@ -83,15 +76,15 @@ def only_bright_pixels_custom(y_true, y_pred):
 
     return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.9 + tf.reduce_mean(squared_difference_map, axis=1) * 0.1
 
-
-# checkpoint_path = "training_checkpoints/20210527-073458/cp-0000.ckpt.index"
-# checkpoint_dir = os.path.dirname(checkpoint_path)
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
+
+# checkpoint_path = "training_checkpoints/20210609-213236/cp-0053.ckpt.index"
+# checkpoint_dir = os.path.dirname(checkpoint_path)
 
 # latest = tf.train.latest_checkpoint(checkpoint_dir)
 # print(latest)
 
-# Loads the weights
+# # Loads the weights
 # seq.load_weights(latest)
 
 def load_scenarios(n_samples, path_name):
@@ -109,7 +102,7 @@ def load_scenarios(n_samples, path_name):
         temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
         for filename in filenames:
             image = imageio.imread(path_name + '/' + directory + '/' + filename, as_gray=True)
-            image = np.reshape(image, (GRID_SIZE,GRID_SIZE,1))
+            image = np.reshape(image, (GRID_SIZE, GRID_SIZE,1))
             filename_sections = filename.split('_')
             filename_index, _ = filename_sections[-1].split('.')
             temp_frames[int(filename_index)] = image/255
@@ -128,13 +121,13 @@ def load_scenarios(n_samples, path_name):
             return frames, label_frames
         i += 1
 
-epochs = 200  # In practice, you would need hundreds of epochs.
+epochs = 200
 batch_size = 1
 n_samples_train = 1000
 n_samples_val = 150
 
 past_frames_train, label_frames_train = load_scenarios(n_samples_train, PATHNAME_TRAINING)
-past_frames_validation, label_frames_validation = load_scenarios(n_samples_val, PATHNAME_TRAINING)
+past_frames_validation, label_frames_validation = load_scenarios(n_samples_val, PATHNAME_VALIDATION)
 
 print("past frames", past_frames_train[:n_samples_train].shape)
 print("label frames", label_frames_train[:n_samples_train].shape)

@@ -38,6 +38,7 @@ class tf_example_scenario:
             self.__grids[time] = np.zeros((self.__grid_size, self.__grid_size))
             self.__evaluate_all(scenario, time)
         return self.__grids
+    
     def load_map_at(self, path, offset, angle):
         """ Loading the data from the tfrecord at a specific vehicle pos """
         dataset = tf.data.TFRecordDataset(path, compression_type='')
