@@ -308,3 +308,4 @@ frames[4:10] = pred[0:6]
 frames = np.expand_dims(frames, axis=0)
 pred[6] = predict_future_frame(frames)
 
+# TODO: visualization with comparison to refernce images

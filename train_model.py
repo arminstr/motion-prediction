@@ -30,7 +30,6 @@ if tf.config.list_physical_devices('GPU'):
     tf.config.experimental.set_memory_growth(physical_devices[0], enable=True)
     # tf.config.experimental.set_virtual_device_configuration(physical_devices[0], [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=6000)])
 
-
 seq = tf.keras.Sequential(
     [
         tf.keras.Input(
@@ -149,6 +148,7 @@ seq_callbacks = [
 seq.save_weights(checkpoint_path.format(epoch=0))
 
 seq.fit(
+    # TODO: Enable training with data generator
     past_frames_train,
     label_frames_train,
     shuffle=True,
