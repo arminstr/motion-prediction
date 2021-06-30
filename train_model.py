@@ -78,15 +78,6 @@ def only_bright_pixels_custom(y_true, y_pred):
 
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
 
-# checkpoint_path = "training_checkpoints/20210609-213236/cp-0053.ckpt.index"
-# checkpoint_dir = os.path.dirname(checkpoint_path)
-
-# latest = tf.train.latest_checkpoint(checkpoint_dir)
-# print(latest)
-
-# # Loads the weights
-# seq.load_weights(latest)
-
 def load_scenarios(n_samples, path_name):
     """
     load scenarios that were saved using convert_training_data.py
@@ -98,28 +89,29 @@ def load_scenarios(n_samples, path_name):
     i = 0
     sample_index = 0
     for directory in directories:
-        _, _, filenames = next(walk(path_name + '/' + directory))
-        temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
-        for filename in filenames:
-            image = imageio.imread(path_name + '/' + directory + '/' + filename, as_gray=True)
-            image = np.reshape(image, (GRID_SIZE, GRID_SIZE,1))
-            filename_sections = filename.split('_')
-            filename_index, _ = filename_sections[-1].split('.')
-            temp_frames[int(filename_index)] = image/255
+        if 'static_' in directory: 
+            _, _, filenames = next(walk(path_name + '/' + directory))
+            temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
+            for filename in filenames:
+                image = imageio.imread(path_name + '/' + directory + '/' + filename, as_gray=True)
+                image = np.reshape(image, (GRID_SIZE, GRID_SIZE,1))
+                filename_sections = filename.split('_')
+                filename_index, _ = filename_sections[-1].split('.')
+                temp_frames[int(filename_index)] = image/255
 
-        # start at index one since frame 0 is empty
-        # for shift_index in range(1, DATA_LENGTH - n_frames):
-        frames[sample_index] = temp_frames[0:n_frames]
-        label_frames[sample_index] = temp_frames[1:n_frames+1]
-        # label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
-        # for j in range(n_frames):
-        #     label_frame[j] = temp_frames[14 + j * 5]
-        # label_frames[sample_index] = label_frame
+            # start at index one since frame 0 is empty
+            # for shift_index in range(1, DATA_LENGTH - n_frames):
+            frames[sample_index] = temp_frames[0:n_frames]
+            label_frames[sample_index] = temp_frames[1:n_frames+1]
+            # label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
+            # for j in range(n_frames):
+            #     label_frame[j] = temp_frames[14 + j * 5]
+            # label_frames[sample_index] = label_frame
 
-        sample_index += 1
-        if sample_index >= n_samples:
-            return frames, label_frames
-        i += 1
+            sample_index += 1
+            if sample_index >= n_samples:
+                return frames, label_frames
+            i += 1
 
 epochs = 200
 batch_size = 1

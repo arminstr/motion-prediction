@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-scenario_name = 'tfrecord-00100-of-01000'
+scenario_name = 'tfrecord-00002-of-00150'
 
-PATHNAME = '/media/dev/data/waymo_motion/training/' + scenario_name
+PATHNAME = '/media/dev/data/waymo_motion/validation'
 GRID_SIZE = 128
 DATA_LENGTH = 90
 
@@ -83,7 +83,7 @@ def only_bright_pixels_custom(y_true, y_pred):
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
 
 # Include the epoch in the file name (uses `str.format`)
-checkpoint_path = "training_checkpoints/20210622-181536/cp-0200.ckpt.index"
+checkpoint_path = "training_checkpoints/20210628-164001/cp-0100.ckpt.index"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 latest = tf.train.latest_checkpoint(checkpoint_dir)
 # Loads the weights
@@ -99,7 +99,7 @@ def postprocess_objects(frame):
     threshold_objects = (reduced_max + reduced_mean) / 2
     mask_objects = tf.math.greater(frame, threshold_objects)
     mask_objects = tf.cast(mask_objects, dtype=tf.float32)
-    return mask_objects * 1
+    return mask_objects * 0.845
 
 def postprocess_map(frame):
     reduced_max = tf.reduce_max(frame)
@@ -181,7 +181,7 @@ dot_img_file = 'images/model.png'
 tf.keras.utils.plot_model(seq, to_file=dot_img_file, show_shapes=True)
 
 def last_int(x):
-    y = x.split("01000_")
+    y = x.split("00150_")
     z = y[1].split(".")
     return(int(z[0]))
 
@@ -190,14 +190,13 @@ def load_scenario(n_frames=10):
     load scenarios that were saved using convert_training_data.py
     """
     frames = np.zeros((1, n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
-    _, directories, _ = next(walk(PATHNAME))
     sample_index = 0
 
-    _, _, filenames = next(walk(PATHNAME))
+    _, _, filenames = next(walk(PATHNAME + '/static_' + scenario_name))
     temp_frames = np.zeros((DATA_LENGTH, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
     
     for filename in sorted(filenames, key = last_int)  :
-        image = imageio.imread(PATHNAME + '/' + filename, as_gray=True)
+        image = imageio.imread(PATHNAME + '/static_' + scenario_name + '/' + filename, as_gray=True)
         image = np.reshape(image, (GRID_SIZE,GRID_SIZE,1))
         filename_sections = filename.split('_')
         filename_index, _ = filename_sections[-1].split('.')
@@ -241,10 +240,10 @@ def predict_future_frame(frames):
     print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
     print("shift angle: ", map_shift_angle)
 
-    FILEPATH = '/media/dev/data/waymo_motion/training/training_tfexample.' + scenario_name
+    FILEPATH = PATHNAME + '/validation_tfexample.' + scenario_name
 
     scenario_converter = tf_example_scenario(128, 1)
-    map = scenario_converter.load_map_at(FILEPATH, map_offset, 0)
+    map = scenario_converter.load_map_at(FILEPATH, [0.0, 0.0,0.0], 0)
     map = np.expand_dims(map, axis=2)/255
 
     objects = postprocess_objects(pred_frames[0, 9]).numpy()

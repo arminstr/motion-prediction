@@ -23,14 +23,14 @@ def get_scenarios_from_folder(path):
     for filename in filenames:
         start_time = time.time()
         _, file_ending = filename.split('.')
-        file_path = path + '/' + file_ending
+        file_path = path + '/static_' + file_ending
         try:
             if not os.path.exists(file_path):
                 os.makedirs(file_path, access_rights)
                 grid_streams[file_ending] = (scenario_converter.load(path + '/' + filename))
                 i = 0
                 for stream in grid_streams[file_ending]:
-                    plt.imsave(file_path + '/' + file_ending + '_' + str(i) + '.png', stream)
+                    plt.imsave(file_path + '/static_' + file_ending + '_' + str(i) + '.png', stream)
                     i += 1
         except OSError:
             print ("Creation of the directory %s failed" % file_path)
