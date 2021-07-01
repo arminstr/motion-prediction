@@ -1,5 +1,5 @@
 """
-This is used to train the rainbow motion prediction cnn.
+This is used to train the motion prediction cnn.
 Created in Mai 2021
 Author: Armin Straller
 Email: armin.straller@hs-augsburg.de
