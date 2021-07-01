@@ -83,7 +83,7 @@ def only_bright_pixels_custom(y_true, y_pred):
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
 
 # Include the epoch in the file name (uses `str.format`)
-checkpoint_path = "training_checkpoints/20210628-164001/cp-0100.ckpt.index"
+checkpoint_path = "training_checkpoints/static-map-100-epochs-1e-1s/cp-0100.ckpt.index"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 latest = tf.train.latest_checkpoint(checkpoint_dir)
 # Loads the weights
@@ -237,8 +237,8 @@ def predict_future_frame(frames):
 
     map_shift_angle = np.arctan2(radius_from_center * (1 + unravel_max.sum(axis=0)[1]), radius_from_center * (1 + unravel_max.sum(axis=0)[0]))/4
 
-    print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
-    print("shift angle: ", map_shift_angle)
+    # print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
+    # print("shift angle: ", map_shift_angle)
 
     FILEPATH = PATHNAME + '/validation_tfexample.' + scenario_name
 
@@ -255,6 +255,8 @@ def predict_future_frame(frames):
     map_masked = mask_objects * map
 
     prediction = np.add(map_masked, objects)
+    # CONTROL: uncommenting the line below disables the prediction data improvement
+    # prediction = pred_frames[0, 9]
 
     plt.subplot(1, 5, 5)
     plt.imshow(prediction)

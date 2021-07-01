@@ -18,11 +18,25 @@ import matplotlib.pyplot as plt
 
 
 from convert_single_scenario import tf_example_scenario
+from data_generator import DataDirectoryStorage, DataGenerator
 
 PATHNAME_TRAINING = '/media/dev/data/waymo_motion/training'
 PATHNAME_VALIDATION = '/media/dev/data/waymo_motion/validation'
+
+# Size of the pixel grid for data rasterization
 GRID_SIZE = 128
-DATA_LENGTH = 90
+
+# DATA_LENGTH = 90
+
+# The parameter TIME_STEPS_100MS sets the amount of time steps used for training. 
+# By increasing this parameter the model sees more data during training. 
+# More data should increase the models performance to predict vehicle movement over a wider varity of scenarios and points in time. 
+# A value of 30 means that the model sees the first 3 seconds of each scenario during training.
+TIME_STEPS_100MS = 30
+
+# The parameter NUMBER_OF_FRAMES sets the amount of frames used for the cnn.
+# Since only one second of history is provided by waymo, the parameter is set to 10 frames each representing 100 ms of historical data.
+NUMBER_OF_FRAMES = 10
 
 tf.keras.backend.clear_session()
 if tf.config.list_physical_devices('GPU'):
@@ -33,7 +47,7 @@ if tf.config.list_physical_devices('GPU'):
 seq = tf.keras.Sequential(
     [
         tf.keras.Input(
-            shape=(10, GRID_SIZE, GRID_SIZE, 1), dtype="float32"
+            shape=(NUMBER_OF_FRAMES, GRID_SIZE, GRID_SIZE, 1), dtype="float32"
         ),
         layers.ConvLSTM2D(
             filters=128, kernel_size=(5, 5), padding="same", return_sequences=True
@@ -99,13 +113,8 @@ def load_scenarios(n_samples, path_name):
                 temp_frames[int(filename_index)] = image/255
 
             # start at index one since frame 0 is empty
-            # for shift_index in range(1, DATA_LENGTH - n_frames):
             frames[sample_index] = temp_frames[0:n_frames]
             label_frames[sample_index] = temp_frames[1:n_frames+1]
-            # label_frame = np.zeros((n_frames, GRID_SIZE, GRID_SIZE, 1), dtype=np.float32)
-            # for j in range(n_frames):
-            #     label_frame[j] = temp_frames[14 + j * 5]
-            # label_frames[sample_index] = label_frame
 
             sample_index += 1
             if sample_index >= n_samples:
@@ -113,15 +122,34 @@ def load_scenarios(n_samples, path_name):
             i += 1
 
 epochs = 200
+
+
+# -----------------------
+# Currently only trainable with batch size one in Nvidia 1060 with 6GB of graphics memory.
+# This is due to the memory required for intermediate calculations e.g. layer activation outputs.
+# The required amount of memory increases linearly with batch size.
+
+# there are two main solutions to this problem. 
+# - Increasing Amount of Memory available by using graphics card with more memory available
+# - splitting up the data into smaller batches and train those on different GPUs in parallel or 
+#   sequentially on one GPU
+
+# References:
+# https://towardsdatascience.com/how-to-break-gpu-memory-boundaries-even-with-large-batch-sizes-7a9c27a400ce
+# https://towardsdatascience.com/what-is-gradient-accumulation-in-deep-learning-ec034122cfa
+
+# -----------------------
 batch_size = 1
-n_samples_train = 1000
-n_samples_val = 150
 
-past_frames_train, label_frames_train = load_scenarios(n_samples_train, PATHNAME_TRAINING)
-past_frames_validation, label_frames_validation = load_scenarios(n_samples_val, PATHNAME_VALIDATION)
 
-print("past frames", past_frames_train[:n_samples_train].shape)
-print("label frames", label_frames_train[:n_samples_train].shape)
+# n_samples_train = 1000
+# n_samples_val = 150
+
+# past_frames_train, label_frames_train = load_scenarios(n_samples_train, PATHNAME_TRAINING)
+# past_frames_validation, label_frames_validation = load_scenarios(n_samples_val, PATHNAME_VALIDATION)
+
+# print("past frames", past_frames_train[:n_samples_train].shape)
+# print("label frames", label_frames_train[:n_samples_train].shape)
 seq.summary()
 
 # Include the epoch in the file name (uses `str.format`)
@@ -147,15 +175,33 @@ seq_callbacks = [
 
 seq.save_weights(checkpoint_path.format(epoch=0))
 
+# generate data ids for data generation the format is defined in DataGenerator
+
+data_info_training = DataDirectoryStorage(PATHNAME_TRAINING, 'static_tfrecord-', TIME_STEPS_100MS, NUMBER_OF_FRAMES)
+training_generator = DataGenerator(data_info_training, (NUMBER_OF_FRAMES, GRID_SIZE, GRID_SIZE, 1), batch_size)
+
+data_info_validation = DataDirectoryStorage(PATHNAME_VALIDATION, 'static_tfrecord-', TIME_STEPS_100MS, NUMBER_OF_FRAMES)
+validation_generator = DataGenerator(data_info_validation, (NUMBER_OF_FRAMES, GRID_SIZE, GRID_SIZE, 1), batch_size)
+
+
+# seq.fit(
+#     # TODO: Enable training with data generator
+#     past_frames_train,
+#     label_frames_train,
+#     shuffle=True,
+#     batch_size=batch_size,
+#     epochs=epochs,
+#     verbose=1,
+#     validation_data = (past_frames_validation, label_frames_validation),
+#     # validation_split=0.1,
+#     callbacks=seq_callbacks
+# )
+
+# Train model on dataset
 seq.fit(
-    # TODO: Enable training with data generator
-    past_frames_train,
-    label_frames_train,
-    shuffle=True,
-    batch_size=batch_size,
+    training_generator,
+    validation_data=validation_generator,
     epochs=epochs,
-    verbose=1,
-    validation_data = (past_frames_validation, label_frames_validation),
-    # validation_split=0.1,
-    callbacks=seq_callbacks
-)
+    callbacks=seq_callbacks,
+    use_multiprocessing=True,
+    workers=6)
