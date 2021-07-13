@@ -136,7 +136,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 \section{Vorverarbeitung der Daten}
 \label{sec:preprocessing}
     Um die Informationen aus dem Waymo Open Motion Dataset in die Darstellungsform des Rasters zu bringen 
-    sind einige Schritte notwendig. Diese werden im Folgenden dargestellt. 
+    sind einige Schritte notwendig. Diese werden im Folgenden erläutert. 
     \subsection{Einlesen des Protobuf} 
         Zunächst muss das Szenario aus dem scenario.proto Format eingelesen werden. 
         Hierfür werden Auszüge aus dem Waymo Open Dataset Motion Tutorial~\cite{Tutorial2021} verwendet. 
@@ -228,9 +228,9 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             optional float length = 5;
             optional float width = 6;
             optional float height = 7;
-            
+
             optional float heading = 8;
-            
+
             optional bool valid = 11;
         }
         \end{lstlisting}
@@ -349,14 +349,13 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
             Insgesamt beinhaltet das Modell 2967681 trainierbare Parameter. 
             Auf dem System welches zum Training verwendet werden soll werden diese Parameter durch float32 repräsentiert welcher 4~Byte im Speicher benötigt.
-            Dies führt auf Basis der Berechnung in Formel~\ref{memory-size} zu einem minimal benötigten Speicherbedarf von 11.87~GB. 
-            Dieser muss auf der zum Training verwendeten Platform Platz im Arbeitsspeicher finden Können.
+            Dies führt auf Basis der Berechnung in Formel~\ref{memory-size} zu einem Speicherbedarf von 11.87~GB. 
             \begin{align}
                 2967681 \cdot 4~Bytes = 11.87~GB
                 \label{memory-size}
             \end{align}
     \subsection{Training}
-        Beim Training wurde zunächst die dynamische Darstellungsform angewandt. 
+        Beim Training wurde zunächst die dynamische Darstellungsform der Szenarioen Verwendet. 
         Diese lieferte allerdings transformierte und rotierte Bilder bei denen für eine erneute Prediktion die Transformation und Rotation bestimmt werden musste. 
         Um diesen Prozess zu vereinfachen wurde deshalb das Training auf die statische Darstellungsform umgestellt.
         \subsubsection{Spezifische Loss-Funktion}
@@ -376,7 +375,6 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             Hierbei werden die Batches die zum Training verwendet werden aufgeteilt. Diese werden dann nacheinander trainiert. Der resultierende Gradient wird dann im Anschluss akkumuliert.
             Dadurch entsteht beim Training der gleiche Effekt wie bei größeren Batch Größen. Der Speicherbedarf bleibt jedoch konstant klein.~\cite{Ttowardsdatascience2021}
 
-\pagebreak
 \section{Ergebnisse}
     Der Ansatz ein Convolutional LSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse.
     Alle Prediktionen von Abbildung~\ref{fig:out_low_dens} bis Abbildung~\ref{fig:out_static_brake} dienen der Veranschaulichung der Performance des ConvLSTMs. 
@@ -384,134 +382,143 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
     Hierbei wird die Datenkonvertierung nicht mehr durchgeführt. 
 
     Für die Erstellung der Prediktionen wurde das Trainierte Convolutional LSTM verwendet. Für Prediktionen die über 100~ms hinaus gehen, wurde das Ergebnis als jeweils 10tes Bild wieder in das Netzwerk eingespeist.
+    
+    
+    \pagebreak
+    \subsection{Scenario mit geringer Dichte an Objekten}
+        In Szenarien mit gerninger Fahrzeugdichte passen die Ausgaben des Modells grundlegend zu den Refernzdaten des Validierungsdatensatzes.
+        Dies ist im folgenden Beispiel erkennbar. Besonders in Abblidung~\ref{fig:out_low_dens} bei +1~s ist gut zu sehen wie die Bewegung der drei größeren Objekte weiter prediziert wird. 
 
-    \paragraph{Geringe Objektdichte} In Szenarien mit gerninger Fahrzeugdichte passen die Ausgaben des Modells grundlegend zu den Refernzdaten des Validierungsdatensatzes.
-    Dies ist im folgenden Beispiel erkennbar. Besonders in Abblidung~\ref{fig:out_low_dens} bei +1~s ist gut zu sehen wie die Bewegung der drei größeren Objekte weiter prediziert wird. 
-
-    \begin{figure}[H]
-        \centering
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_0.png}
-            \caption{-1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_1.png}
-            \caption{-0.5~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_2.png}
-            \caption{0~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_3.png}
-            \caption{+0.1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_4.png}
-            \caption{+1~s}
-        \end{subfigure}
-        \vspace{1cm}
-        \begin{subfigure}[b]{0.6\textwidth}
-            \includegraphics[width=\textwidth]{output_low_dens_4.png}
-            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
-        \end{subfigure}
-        \caption{Beispiel für Szenario mit geringer Objektdichte}\label{fig:out_low_dens}
-    \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_0.png}
+                \caption{-1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_1.png}
+                \caption{-0.5~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_2.png}
+                \caption{0~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_3.png}
+                \caption{+0.1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_4.png}
+                \caption{+1~s}
+            \end{subfigure}
+            \vspace{1cm}
+            \begin{subfigure}[b]{0.6\textwidth}
+                \includegraphics[width=\textwidth]{output_low_dens_4.png}
+                \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+            \end{subfigure}
+            \caption{Beispiel für Szenario mit geringer Objektdichte}\label{fig:out_low_dens}
+        \end{figure}
 
     \pagebreak
-    \paragraph{Komplexes Szenario} Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
-    Im folgenden Beispiel werden alle Objekte in die gleiche Richtung prediziert. 
+    \subsection{Komplexes Szenario mit unterschiedlichen Bewegungsrichtungen} 
+        Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
+        In der Abbildung~\ref{fig:out_opposite} werden alle Objekte in die gleiche Richtung prediziert. Dies ist für die in der Abbildung oben liegende Fahrspur falsch.
 
-    \begin{figure}[H]
-        \centering
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_0.png}
-            \caption{-1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_1.png}
-            \caption{-0.5~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_2.png}
-            \caption{0~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_3.png}
-            \caption{+0.1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_4.png}
-            \caption{+1~s}
-        \end{subfigure}
-        \vspace{1cm}
-        \begin{subfigure}[b]{0.6\textwidth}
-            \includegraphics[width=\textwidth]{output_opposite_4.png}
-            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
-        \end{subfigure}
-        \caption{Beispiel für komplexes Szenario mit Gegenverkehr}\label{fig:out_opposite}
-    \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_0.png}
+                \caption{-1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_1.png}
+                \caption{-0.5~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_2.png}
+                \caption{0~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_3.png}
+                \caption{+0.1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_4.png}
+                \caption{+1~s}
+            \end{subfigure}
+            \vspace{1cm}
+            \begin{subfigure}[b]{0.6\textwidth}
+                \includegraphics[width=\textwidth]{output_opposite_4.png}
+                \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+            \end{subfigure}
+            \caption{Beispiel für komplexes Szenario mit Gegenverkehr}\label{fig:out_opposite}
+        \end{figure}
 
     \pagebreak
-    \paragraph{Statisches Hindernis} Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge für eine statisches Hindernis am Straßenrand bremsen müssen. 
-    Hier liegen die Prediktionen relativ nah an den Refernzdaten.
+    \subsection{Szenario mit statischem Hindernis am Straßenrand} 
+        Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge für eine statisches Hindernis am Straßenrand verzögern müssen. 
+        Hier liegen die Prediktionen relativ nah an den Referenzdaten. In Abbildung~\ref{fig:out_static_brake} wird zudem ersichtlich, dass die predizierte Positionsänderung der Objekte nicht für das gesamte Ausgangsbild gleich ist. 
+        Objekte die zu Beginn des Szenarios schneller sind bewegen sich noch weiter als Objekte die bereits langsam sind und innerhalb des predizierten Zeitraumes zum Stillstand kommen. 
 
-    \begin{figure}[H]
-        \centering
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_0.png}
-            \caption{-1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_1.png}
-            \caption{-0.5~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_2.png}
-            \caption{0~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_3.png}
-            \caption{+0.1~s}
-        \end{subfigure}
-        ~
-        \begin{subfigure}[b]{0.18\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_4.png}
-            \caption{+1~s}
-        \end{subfigure}
-        \vspace{1cm}
-        \begin{subfigure}[b]{0.6\textwidth}
-            \includegraphics[width=\textwidth]{output_static_brake_4.png}
-            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
-        \end{subfigure}
-        \caption{Beispiel für Szenario mit Geschwindigkeitsdifferenz}\label{fig:out_static_brake}
-    \end{figure}
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_0.png}
+                \caption{-1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_1.png}
+                \caption{-0.5~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_2.png}
+                \caption{0~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_3.png}
+                \caption{+0.1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_4.png}
+                \caption{+1~s}
+            \end{subfigure}
+            \vspace{1cm}
+            \begin{subfigure}[b]{0.6\textwidth}
+                \includegraphics[width=\textwidth]{output_static_brake_4.png}
+                \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+            \end{subfigure}
+            \caption{Beispiel für Szenario mit Geschwindigkeitsdifferenz}\label{fig:out_static_brake}
+        \end{figure}
+    \pagebreak
+    \subsection{Beobachtete Probleme bei der Prediktion}
+        Folgende Probleme wurden bei der Prediktion in kombination mit der Datenaufbereitung fetstgestellt.
+        
+        \paragraph{Probleme durch nichtlineare Einfärbung bei Rasterisierung} Da bei der Datenverarbeitung eine 
+        nichtlineare Funktion zum einfärben der Objekte und Kartendaten verwendet wurde, unterscheiden sich die Trainingsdaten 
+        zum Teil stark in der Intesität. Dies fürhrt dazu, dass das Decoding der Bildinformationen in Positionsdaten auf 
+        Basis von klassischer Bildverarbeitung nur aufwändig möglich ist. Daher kann im Rahmen dieses Projketes keine aussagekräftige 
+        Auswertung über die Genauigkeit der Prediktionen erfolgen.
 
-    \paragraph{Probleme durch nichtlineare Einfärbung bei Rasterisierung} Da bei der Datenverarbeitung eine 
-    nichtlineare Funktion zum einfärben der Objekte und Kartendaten verwendet wurde, unterscheiden sich die Trainingsdaten 
-    zum Teil stark in der Intesität. Dies fürhrt dazu, dass das Decoding der Bildinformationen in Positionsdaten auf 
-    Basis von klassischer Bildverarbeitung nur aufwändig möglich ist. Daher kann im Rahmen dieses Projketes keine aussagekräftige 
-    Auswertung über die Genauigkeit der Prediktionen erfolgen.
+        Durch inkonsequente Einfärbung der Trainingsdaten ist es zudem nicht möglich die Daten aufzubereiten und mehrfache Prediktionen durchzuführen.
+        Hierdurch sollte ursprünglich eine gesamte Vorausschau von 8~Sekunden erreicht werden.
 
-    Durch inkonsequente Einfärbung der Trainingsdaten ist es zudem nicht möglich die Daten aufzubereiten und mehrfache Prediktionen durchzuführen.
-    Hierdurch sollte ursprünglich eine gesamte Vorausschau von 8~Sekunden erreicht werden.
-
-    \paragraph{Verbesserungsmöglichkeiten bei der spezifischen Loss-Funktion} Die Kartendaten hinterlassen Fragmente bei der Vorhersage. 
-    Diese können vermutlich durch die Bearbeitung der Loss-Funktion beeinflusst und reduziert werden.
-    \paragraph{Training mit längeren Zeitabschnitten} Aufgrund der limiterten Hardwareleistung wurden nur beim Training mit dem ersten 
-    Zeitschritte der 1000~Scenarios verwertbare Ergebnisse erziehlt. Bei einem Training mit allen Zeitschritten der 1000~Szenarios ist zu erwarten, 
-    dass bessere Ergebnisse erziehlt werden können.
+        \paragraph{Verbesserungsmöglichkeiten bei der spezifischen Loss-Funktion} Die Kartendaten hinterlassen Fragmente bei der Vorhersage. 
+        Diese können vermutlich durch die Bearbeitung der Loss-Funktion beeinflusst und reduziert werden.
+        \paragraph{Training mit längeren Zeitabschnitten} Aufgrund der limiterten Hardwareleistung wurden nur beim Training mit dem ersten 
+        Zeitschritte der 1000~Scenarios verwertbare Ergebnisse erziehlt. Bei einem Training mit allen Zeitschritten der 1000~Szenarios ist zu erwarten, 
+        dass bessere Ergebnisse erziehlt werden können.
 
     \subsection{Lessons Learned und Future Work}
         \begin{itemize}
@@ -520,7 +527,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             \item Die Inference Zeit ist deutlich schlechter als bei einer Bild-Klassifikation. Dies liegt an der größe des Netzwerks und der Menge der Eingangsdaten. Dies sollte für die praktische Verwendbarkeit des ConvLSTM+Raster Ansatzes berücksichtigt werden. 
             \item Durch höhere Auflösung des Rasters könnten Objekte besser unterschieden und unabhängig voneinander prediziert werden. Dies führt allerdings zu einer geringeren betrachtbaren Kartengröße oder zu einem größeren und langsameren Netzwerk.
         \end{itemize}
-
+\pagebreak
 \bibliography{motion-prediction}{}
 \bibliographystyle{ieeetr}
 
