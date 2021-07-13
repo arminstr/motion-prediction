@@ -39,14 +39,16 @@ class tf_example_scenario:
             self.__evaluate_all(scenario, time)
         return self.__grids
     
-    def load_map_at(self, path, offset, angle):
+    def load_map_at(self, path, offset, angle, timestep):
         """ Loading the data from the tfrecord at a specific vehicle pos """
         dataset = tf.data.TFRecordDataset(path, compression_type='')
         data = next(dataset.as_numpy_iterator())
         scenario = Scenario(data)
-        timestep = 9
         self.__grids[timestep] = np.zeros((self.__grid_size, self.__grid_size))
-        self.__evaluate_past_ego_pos(scenario, timestep)
+        if timestep < 10:
+            self.__evaluate_past_ego_pos(scenario, timestep)
+        if timestep > 9:
+            self.__evaluate_future_ego_pos(scenario, timestep)
         self.__ego_vehicle.global_x += offset[0]
         self.__ego_vehicle.global_y += offset[1]
         self.__ego_vehicle.yaw += angle
@@ -132,7 +134,6 @@ class tf_example_scenario:
                 i += 1
         else:
             self.__evaluate_past_ego_pos(scenario, 9)
-
             self.__evaluate_map(scenario, timestep)
     
     def __evaluate_past(self, scenario, timestep):
