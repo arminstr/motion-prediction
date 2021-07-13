@@ -11,7 +11,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{graphicx}
-\usepackage{sidecap}
+\usepackage{subcaption}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -125,10 +125,12 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
     Die Verkehrsinformationen werden in ein Raster eingetragen und in Bildform als Eingangsdaten für das Convolutional-LSTM verwendet.
     Hierdurch können die Karten- und Positionsdaten der Verkehrsteilnehmer in Relation gebracht werden. 
     Die Historie der Bewegung wird dann durch die Eingangsbreite des LSTMs dargestellt. 
-    Das Keras Beispiel "Next-Frame Video Prediction with Convolutional LSTMs"~\cite{Keras2021} dient als Grundlage für die Umsetzung.
+    Das Keras Beispiel \grqq Next-Frame Video Prediction with Convolutional LSTMs\grqq ~\cite{Keras2021} dient als Grundlage für die Umsetzung.
     Da das Raster nur mit begrenzter Auflösung arbeitet kann es theoretisch vorkommen, dass das Autonome Fahrzeug 
     im Szenario das Raster verlässt. Um dies zu umgehen wird ein Ansatz eine Transformation des Szenarios in die Ego-Perspektive des autonomen Fahrzeugs beinhalten. 
     Im Folgenden wird daher von einer statischen oder dynamischen Darstellung gesprochen, wobei die dynamische Darstellung die Transformation in die Ego-Perspektive beinhaltet. 
+    Um eine Prediktion von bis zu 8~Sekunden zu ermöglichen, soll das Modell erneute Prediktionen auf basis der bereits predizierten Bilder erstellen. 
+    Dies wird wiederholt bis der benötigte Zeithorizont abgedeckt ist.  
 
 \section{Vorverarbeitung der Daten}
 \label{sec:preprocessing}
@@ -140,73 +142,235 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Dabei werden allerdings nur die Einträge geladen die für die Rasterisierung der Objekte notwendig sind. 
         Es werden immer alle Zeitschritte geladen und anschließend konvertiert. 
         Dies beinhaltetd die vergangenen, den aktuellen und die zukünftigen Elemente des Protobufs.
+    
+    \pagebreak
     \subsection{Konvertierung der Karte}
         Die Karteninformation ist Teil des scenario.proto und wird in Form des map.proto in jedem Szenario bereitgestellt.
-        Ein Auszug aus der map.proto Definition der in Listing~\ref{sec:maplisting} dargestellt wird zeigt diese Liste und die Definition der Punkte. 
+        Ein Auszug aus der map.proto Definition der in Listing~\ref{lst:maplisting} dargestellt wird zeigt diese Liste und die Definition der Punkte. 
         Hierbei ist zu beachten, dass die Punkte in Metern zu einem beliebigen Ursprung gegeben sind. 
-        Die "polyline" definiert dann ein Feature des Straßennetzwerks. Diese ist eine Liste von "MapPoints" welche Segemente zwischen aufeinanderfolgenden Punkten definieren.
+        Die \grqq polyline\grqq~definiert dann ein Feature des Straßennetzwerks (im Beispiel für \grqq LaneCenter\grqq~). Diese ist eine Liste von \grqq MapPoints\grqq~welche Segemente zwischen aufeinanderfolgenden Punkten definieren.
         Da die Auflösung der Punkt groß genug ist werden diese Einfach in das Raster übertragen. 
-        Sobald ein "MapPoint" innerhalb eines Rasterelements liegt wird dieses entsprechend des Linientypen eingefärbt.
+        Sobald ein \grqq MapPoint\grqq~innerhalb eines Rasterelements liegt wird dieses entsprechend des Linientypen eingefärbt.
         \vspace{0.5cm}
-        \begin{lstlisting}[language=protobuf2, caption=Auszug aus map.proto, label={sec:maplisting}]
-        repeated MapPoint polyline = 2;
+        \begin{lstlisting}[language=protobuf2, caption=Auszug aus map.proto, label={lst:maplisting}]
+        message LaneCenter {
+            // ...
+            repeated MapPoint polyline = 2;
+        }
         message MapPoint {
             optional double x = 1;
             optional double y = 2;
             optional double z = 3;
         }
         \end{lstlisting}
-        Im folgenden wird die Karte aus dem Szenario %TODO: Insert Scenario Name 
-        dargestellt. Die statische Repräsentation das Scenarios erfordert eine einmalige Konvertierung der Karte. 
+        Im Abbildung~\ref{fig:stat_map} wird die Karte aus dem Szenario 38 des Validierungsdatensatzes dargestellt. 
+        Die statische Repräsentation das Scenarios erfordert eine einmalige Konvertierung der Karte. 
         Diese bleibt dann für den gesamten Zeitraum des Szenarios konstant.
 
         \begin{figure}[h]
             \centering
-            \includegraphics[width=0.8\textwidth]{visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png}
+            \includegraphics[width=0.3\textwidth]{example_static_map.png}
             \caption{Beispiel einer in das Raster übertragenen Karte}
+            \label{fig:stat_map}
         \end{figure}
 
-        \paragraph{Dynamische Darstellungsform}
+        \paragraph{Dynamische Darstellungsform der Karte}
             Für den Fall der dynamischen Darstellung der Karte muss diese bei jeder Bewegung des autonomen Fahrzeugs 
-            in dessen Ego-Perspektive transformiert werden. 
+            in dessen Ego-Perspektive transformiert werden. Dadurch ergibt sich zum Beispiel bei einer Kurvenfahrt 
+            eine Rotation und Translation der Karte. Dies wird in Abblidung~\ref{fig:dyn_maps} veranschaulicht. 
+            Hier wird die Karte für die Zeitschritte -1~s also dem Start der Aufzeichnung, 0~s entsprechend dem gegenwärtigen Zeitschritt, 
+            sowie den zukünftigen Zeitschritten +1~s und +2~s dargestellt. Datengrundlage ist das zweite Szenario des Validierungsdatensatzes. 
+            
+            \begin{figure}[h]
+                \centering
+                \begin{subfigure}[b]{0.18\textwidth}
+                    \includegraphics[width=\textwidth]{example_dynamic_map_0.png}
+                    \caption{-1~s}
+                \end{subfigure}
+                ~
+                \begin{subfigure}[b]{0.18\textwidth}
+                    \includegraphics[width=\textwidth]{example_dynamic_map_10.png}
+                    \caption{0~s}
+                \end{subfigure}
+                ~
+                \begin{subfigure}[b]{0.18\textwidth}
+                    \includegraphics[width=\textwidth]{example_dynamic_map_20.png}
+                    \caption{+1~s}
+                \end{subfigure}
+                ~
+                \begin{subfigure}[b]{0.18\textwidth}
+                    \includegraphics[width=\textwidth]{example_dynamic_map_30.png}
+                    \caption{+2~s}
+                \end{subfigure}
+                ~
+                \begin{subfigure}[b]{0.18\textwidth}
+                    \includegraphics[width=\textwidth]{example_dynamic_map_40.png}
+                    \caption{+3~s}
+                \end{subfigure}
+                \caption{Beispiel für eine dynamische gerasterte Karte}\label{fig:dyn_maps}
+            \end{figure}
 
-        
-
+    \newpage
     \subsection{Konvertierung der Objekte}
         Der Protobuf enthält Informationen über die Größe sowie globale Position und Orienierung der Objekte. 
-        Dadurch können die vier 2D-Eckkoordinaten der Objekte berechnet werden. Um diese in das 2D-Raster zu übertragen wird die Grundfläche der Box in 
-        zwei Dreiecke aufgeteilt und anschließend Mithilfe des %TODO Algorithms
-        in das Raster übertragen. Wenn Objekte kleiner als ein Rasterelement sind, werden sie auf ein ganzes Rasterelement übertragen. 
+        Dadurch können die vier 2D-Eckkoordinaten der Objekte berechnet werden. Um diese in das 2D-Raster zu übertragen wird die Grundfläche der Box entlang der Diagonale in  
+        zwei Dreiecke aufgeteilt und anschließend in das Raster übertragen. Wenn Objekte kleiner als ein Rasterelement sind, werden sie auf ein ganzes Rasterelement übertragen. 
         So kann sichergestellt werden, dass alle Objekte in der Darstellung repräsentiert werden.
-
-    \subsection{Transformation in dynamische Darstellungsform}
-
-
-\section{Analysis}
-	Here you discuss your observations and results
-	
-    \subsection{Double Slit Interference}
-		The subsection command let's you further divide your sections up.  Comment on your observations and results here
-        
-        \subsubsection{Varying Parameters}
-        	For longer documents, you can even use subsubsections, 
-            it's probably overkill for this analysis.
+        Die Definition der Objekte im Protobuf wird in Listing~\ref{lst:objectlisting} aufgeführt. 
+        Das \grqq valid\grqq~Flag gibt an ob die Daten verwertbar sind. 
+        Ist dieses für einen Zeitschritt nicht wahr, wird das Objekt für den zugehörigen Schritt nicht in das Raster übertragen.
+        \vspace{0.5cm}
+        \begin{lstlisting}[language=protobuf2, caption=Auszug aus scenario.proto, label={lst:objectlisting}]
+        message ObjectState {
+            optional double center_x = 2;
+            optional double center_y = 3;
+            optional double center_z = 4;
             
-            \paragraph{Still More labels}
-            	You can also label paragraphs
-                
-                \subparagraph{Subparagraphs}
-                	And even subparagraphs.  Fortunately, we won't be 
-                    writing such long documents in this course!
-       
-       \subsubsection{When to Make New Sections}
-        	As a general rule of thumb, don't make smaller sections, subsections, etc, unless there are at least two of them at that level (just like with lists).
-	
-    \subsection{Single Slit}
-		More discussion here
+            optional float length = 5;
+            optional float width = 6;
+            optional float height = 7;
+            
+            optional float heading = 8;
+            
+            optional bool valid = 11;
+        }
+        \end{lstlisting}
+        Im Abbildung~\ref{fig:stat_objects} werden Ausschnitte aus dem gesamten Szenario 38 des Validierungsdatensatzes dargestellt.
+        Die Objekte werden entsprechend ihrer globalen Position dem Raster hinzugefügt.
+        Da bei der Erstellung der Bilder für die Einfärbung eine Heatmap verwendet wir, werden stets die höchsten Werte in der hellsten Farbe dargestellt. 
+        Deshalb ist die Karte in Abbildung~\ref{fig:stat_map} auch deutlich heller eingezeichnet als in Abbildung~\ref{fig:stat_objects}.
+
+        \begin{figure}[h]
+            \centering
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_static_objects_0.png}
+                \caption{-1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_static_objects_10.png}
+                \caption{0~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_static_objects_20.png}
+                \caption{+1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_static_objects_30.png}
+                \caption{+2~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_static_objects_40.png}
+                \caption{+3~s}
+            \end{subfigure}
+            \caption{Beispiel für Objekte auf statischer Karte}\label{fig:stat_objects}
+        \end{figure}
+
+        \paragraph{Dynamische Darstellungsform für Objekte}
+        Bei der dynamischen Darstellungsform, müssen alle Objekte auf Basis der aktuellen Position des autonomen Fahrzeugs 
+        in dessen lokales Koordinatensystem transformiert werden. Die Information darüber welches Fahrzeug das autonom agierende ist, 
+        kann ebenfalls dem Protobuf entnommen werden. Die dynamische Darstellung der Objekte wird in Abbildung~\ref{fig:dyn_objects} anhand des zweiten Scenarios aus dem Validierungsdatensatz gezeigt.
         
-\section{Data}
-	Please don't include any data tables in your \LaTeX\, write up.  Making tables in \LaTeX\, is very boring, although there are programs to convert your Excel file to \LaTeX\, form!  We'll worry about that later.
+        \begin{figure}[h]
+            \centering
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_dynamic_objects_0.png}
+                \caption{-1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_dynamic_objects_10.png}
+                \caption{0~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_dynamic_objects_20.png}
+                \caption{+1~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_dynamic_objects_30.png}
+                \caption{+2~s}
+            \end{subfigure}
+            ~
+            \begin{subfigure}[b]{0.18\textwidth}
+                \includegraphics[width=\textwidth]{example_dynamic_objects_40.png}
+                \caption{+3~s}
+            \end{subfigure}
+            \caption{Beispiel für Objekte in dynamischer Darstellungsform}\label{fig:dyn_objects}
+        \end{figure}
+
+    \subsection{Speicherung der Trainings- und Validierungsdaten}
+        Die konvertierten Daten werden für das Training des ConvLSTM Netzwerks in einer Ordnerstruktur abgelegt. 
+        Diese beinhaltet einen Ordner für jedes Szenario. 
+        Ordner bei denen die statische Darstellungsform verwendet wurde tragen den prefix \grqq static\textunderscore\grqq .
+    \subsection{Probleme bei der Datengenerierung} 
+        \paragraph{Fehler durch Rasterisierung} Die Rasterisierung dazu führt, dass Objekte nur mit der Rasterauflösung von 0.5~m positioniert sein können. 
+        Deshalb kann es vorkommen, dass Objekte von einem Zeitschritt zum nächsten um die Rasterauflösung springen. 
+        Dies führt bei einer nur geringen Bewegung, die allerdings die grenze zum nächsten Feld des Rasters überschreitet, zu großen Fehlern. 
+        \paragraph{Konvertierungszeit} Durch die große Datenmenge der Protobufs und die ineffiziente Programmierung des Konvertierungsalgorithmus, 
+        benötigt dieser zwischen 150~s und 200~s für die Konvertierung eines Szenarios.
+
+\pagebreak
+\section{ConvLSTM für Bewegungsvorhersage}
+    \subsection{Modell}
+        \subsubsection{Verwendete Bibliotheken}
+            keras
+            tensorflow
+        \subsubsection{Architektur}
+            bild und erklärung
+    \subsection{Training}
+        \paragraph{Hardware} Nvidia GeForce 1060
+        \subsubsection{Spezifische Loss-Funktion}
+	        Custom Data Generator implementation
+        \subsubsection{Generierung der Trainingsdaten zur Laufzeit}
+	        Custom Data Generator implementation
+        
+        \subsubsection{Gradient Accumulation}
+		    What is Gradient Accumulation
+            How was it implemented in this case
+        \subsubsection{Verschiedene Trainingsläufe}
+            Test123
+\pagebreak
+\section{Ergebnisse}
+    Der Ansatz ein Convolutional LSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse. 
+    Diese werden in den folgenden Paragraphen vorgestellt:
+
+    \paragraph{Geringe Objektdichte} In Szenarien mit gerninger Fahrzeugdichte passen die Ausgaben des Modells grundlegend zu den Refernzdaten des Validierungsdatensatzes.
+    Dies ist im folgenden Beispiel erkennbar. %TODO insert prediction for Sceanrio 38
+
+    \paragraph{Komplexes Szenario} Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
+    Im folgenden Beispiel werden alle Objekte in die gleiche Richtung prediziert. %TODO insert prediction for Scenario 12
+
+    \paragraph{Statisches Hindernis} Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge für eine statisches Hindernis am Straßenrand bremsen müssen. 
+    Hier liegen die Prediktionen relativ nah an den Refernzdaten. %TODO insert prediction for Scenario 50
+
+    \paragraph{Probleme durch nichtlineare Einfärbung bei Rasterisierung} Da bei der Datenverarbeitung eine 
+    nichtlineare Funktion zum einfärben der Objekte und Kartendaten verwendet wurde, unterscheiden sich die Trainingsdaten 
+    zum Teil stark in der Intesität. Dies fürhrt dazu, dass das Decoding der Bildinformationen in Positionsdaten auf 
+    Basis von klassischer Bildverarbeitung nur aufwändig möglich ist. Daher kann im Rahmen dieses Projketes keine aussagekräftige 
+    Auswertung über die Genauigkeit der Prediktionen erfolgen.
+
+    Durch inkonsequente Einfärbung der Trainingsdaten ist es zudem nicht möglich die Daten aufzubereiten und mehrfache Prediktionen durchzuführen.
+    Hierdurch sollte ursprünglich eine gesamte Vorausschau von 8~Sekunden erreicht werden.
+
+    \paragraph{Verbesserungsmöglichkeiten bei der spezifischen Loss-Funktion} Die Kartendaten hinterlassen Fragmente bei der Vorhersage. 
+    Diese können vermutlich durch die Bearbeitung der Loss-Funktion beeinflusst und reduziert werden.
+    \paragraph{Training mit längeren Zeitabschnitten} Aufgrund der limiterten Hardwareleistung wurden nur beim Training mit dem ersten 
+    Zeitschritte der 1000~Scenarios verwertbare Ergebnisse erziehlt. Bei einem Training mit allen Zeitschritten der 1000~Szenarios ist zu erwarten, 
+    dass bessere Ergebnisse erziehlt werden können.
+
+    \subsection{Lessons Learned und Future Work}
+        \begin{itemize}
+            \item Convolutional LSTMs benötigen viel Grafikspeicher.
+            \item Gradient Accumulation ermöglicht den Speicherbedarf für Zwischenergebnisse auf der GPU zu verringern.
+            \item Der Rechenaufwand für die Rasterisierung der Daten sollte nicht unterschätzt werden.
+            \item Die Inference Zeit ist deutlich schlechter als bei einer Bild-Klassifikation. Dies liegt an der größe des Netzwerks und der Menge der Eingangsdaten. Dies sollte für die praktische Verwendbarkeit des ConvLSTM+Raster Ansatzes berücksichtigt werden. 
+            \item Durch höhere Auflösung des Rasters könnten Objekte besser unterschieden und unabhängig voneinander prediziert werden. Dies führt allerdings zu einer geringeren betrachtbaren Kartengröße oder zu einem größeren und langsameren Netzwerk.
+        \end{itemize}
 
 \bibliography{motion-prediction}{}
 \bibliographystyle{ieeetr}

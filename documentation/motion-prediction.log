@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.14)  13 JUL 2021 13:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.14)  13 JUL 2021 16:55
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1557,17 +1557,27 @@ Package graphics Info: Driver file: pdftex.def on input line 99.
 )
 \Gin@req@height=\dimen174
 \Gin@req@width=\dimen175
-) (/usr/local/texlive/2018/texmf-dist/tex/latex/sidecap/sidecap.sty
-Package: sidecap 2003/06/06 v1.6f SideCap Package (RN/HjG)
- (/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty
-Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/caption/subcaption.sty
+Package: subcaption 2016/05/22 v1.1-161 Sub-captions (AR)
+ (/usr/local/texlive/2018/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+ (/usr/local/texlive/2018/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2016/05/22 v1.7-166 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen176
+\captionmargin@=\dimen177
+\captionwidth=\dimen178
+\caption@tempdima=\dimen179
+\caption@indent=\dimen180
+\caption@parindent=\dimen181
+\caption@hangindent=\dimen182
 )
-\SC@BOXWD=\dimen176
-\SC@CAPWD=\dimen177
-\SC@tempdima=\dimen178
-\SC@tempdimb=\dimen179
-\c@SC@C=\count295
-\SC@BOX=\box54
+\c@ContinuedFloat=\count295
+Package caption Info: hyperref package is loaded.
+Package caption Info: listings package is loaded.
+)
+\c@subfigure=\count296
+\c@subtable=\count297
 ) (/Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.aux)
 \openout1 = `motion-prediction.aux'.
 
@@ -1698,14 +1708,14 @@ File: siunitx-abbreviations.cfg 2017/11/26 v2.7k siunitx: Abbreviated units
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\AtBeginShipoutBox=\box55
+\AtBeginShipoutBox=\box54
 Package hyperref Info: Link coloring OFF on input line 77.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
  (/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count296
+\c@section@level=\count298
 )
 LaTeX Info: Redefining \ref on input line 77.
 LaTeX Info: Redefining \pageref on input line 77.
@@ -1714,19 +1724,19 @@ LaTeX Info: Redefining \nameref on input line 77.
 \@outlinefile=\write3
 \openout3 = `motion-prediction.out'.
 
-\c@lstlisting=\count297
+\c@lstlisting=\count299
  (/usr/local/texlive/2018/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count298
-\scratchdimen=\dimen180
-\scratchbox=\box56
-\nofMPsegments=\count299
-\nofMParguments=\count300
+\scratchcounter=\count300
+\scratchdimen=\dimen183
+\scratchbox=\box55
+\nofMPsegments=\count301
+\nofMParguments=\count302
 \everyMPshowfont=\toks24
-\MPscratchCnt=\count301
-\MPscratchDim=\dimen181
-\MPnumerator=\count302
-\makeMPintoPDFobject=\count303
+\MPscratchCnt=\count303
+\MPscratchDim=\dimen184
+\MPnumerator=\count304
+\makeMPintoPDFobject=\count305
 \everyMPtoPDFconversion=\toks25
 ) (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -1739,166 +1749,326 @@ Package grfext Info: Graphics extension search list:
 (grfext)             \AppendGraphicsExtensions on input line 456.
  (/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
-)) (/usr/local/texlive/2018/texmf-dist/tex/latex/ms/ragged2e.sty
-Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
- (/usr/local/texlive/2018/texmf-dist/tex/latex/ms/everysel.sty
-Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
- ABD: EverySelectfont initializing macros
-LaTeX Info: Redefining \selectfont on input line 126.
-)
-\CenteringLeftskip=\skip59
-\RaggedLeftLeftskip=\skip60
-\RaggedRightLeftskip=\skip61
-\CenteringRightskip=\skip62
-\RaggedLeftRightskip=\skip63
-\RaggedRightRightskip=\skip64
-\CenteringParfillskip=\skip65
-\RaggedLeftParfillskip=\skip66
-\RaggedRightParfillskip=\skip67
-\JustifyingParfillskip=\skip68
-\CenteringParindent=\skip69
-\RaggedLeftParindent=\skip70
-\RaggedRightParindent=\skip71
-\JustifyingParindent=\skip72
-)
+))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 99.
+(babel)             in language append on input line 99.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 99.
+(babel)             in language append on input line 99.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 99.
+(babel)             in language append on input line 99.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 105.
+(babel)             in language append on input line 105.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 105.
+(babel)             in language append on input line 105.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 105.
+(babel)             in language append on input line 105.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 111.
+(babel)             in language append on input line 111.
  [1
 
 {/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 113.
+(babel)             in language append on input line 113.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 113.
+(babel)             in language append on input line 113.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 113.
+(babel)             in language append on input line 113.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 123.
+(babel)             in language append on input line 123.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 123.
+(babel)             in language append on input line 123.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 123.
+(babel)             in language append on input line 123.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 133.
+(babel)             in language append on input line 135.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 133.
+(babel)             in language append on input line 135.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 133.
+(babel)             in language append on input line 135.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 137.
+(babel)             in language append on input line 139.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 137.
+(babel)             in language append on input line 139.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 137.
+(babel)             in language append on input line 139.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 143.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 143.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 143.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 151.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 151.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 151.
-Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 151.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 151.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 151.
+(babel)             in language append on input line 147.
  [2]
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 151.
-<visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png, id=94, 1335.5496pt x 703.9098pt>
-File: visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png Graphic file (type png)
-<use visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png>
-Package pdftex.def Info: visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png  used on input line 165.
-(pdftex.def)             Requested size: 364.19667pt x 191.94856pt.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 175.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 175.
+(babel)             in language append on input line 147.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 175.
+(babel)             in language append on input line 147.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 155.
+<example_static_map.png, id=118, 257.96375pt x 251.94125pt>
+File: example_static_map.png Graphic file (type png)
+<use example_static_map.png>
+Package pdftex.def Info: example_static_map.png  used on input line 172.
+(pdftex.def)             Requested size: 136.57462pt x 133.38982pt.
+<example_dynamic_map_0.png, id=121, 257.96375pt x 251.94125pt>
+File: example_dynamic_map_0.png Graphic file (type png)
+<use example_dynamic_map_0.png>
+Package pdftex.def Info: example_dynamic_map_0.png  used on input line 187.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_map_10.png, id=122, 257.96375pt x 251.94125pt>
+File: example_dynamic_map_10.png Graphic file (type png)
+<use example_dynamic_map_10.png>
+Package pdftex.def Info: example_dynamic_map_10.png  used on input line 192.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_map_20.png, id=123, 257.96375pt x 251.94125pt>
+File: example_dynamic_map_20.png Graphic file (type png)
+<use example_dynamic_map_20.png>
+Package pdftex.def Info: example_dynamic_map_20.png  used on input line 197.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_map_30.png, id=124, 257.96375pt x 251.94125pt>
+File: example_dynamic_map_30.png Graphic file (type png)
+<use example_dynamic_map_30.png>
+Package pdftex.def Info: example_dynamic_map_30.png  used on input line 202.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_map_40.png, id=125, 257.96375pt x 251.94125pt>
+File: example_dynamic_map_40.png Graphic file (type png)
+<use example_dynamic_map_40.png>
+Package pdftex.def Info: example_dynamic_map_40.png  used on input line 207.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 182.
+(babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 182.
+(babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 182.
+(babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 185.
+(babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 185.
+(babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 185.
+(babel)             in language append on input line 213.
+[3 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_map.png>]
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 214.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 214.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 214.
+<example_static_objects_0.png, id=151, 257.96375pt x 251.94125pt>
+File: example_static_objects_0.png Graphic file (type png)
+<use example_static_objects_0.png>
+Package pdftex.def Info: example_static_objects_0.png  used on input line 246.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_static_objects_10.png, id=152, 257.96375pt x 251.94125pt>
+File: example_static_objects_10.png Graphic file (type png)
+<use example_static_objects_10.png>
+Package pdftex.def Info: example_static_objects_10.png  used on input line 251.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_static_objects_20.png, id=153, 257.96375pt x 251.94125pt>
+File: example_static_objects_20.png Graphic file (type png)
+<use example_static_objects_20.png>
+Package pdftex.def Info: example_static_objects_20.png  used on input line 256.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_static_objects_30.png, id=154, 257.96375pt x 251.94125pt>
+File: example_static_objects_30.png Graphic file (type png)
+<use example_static_objects_30.png>
+Package pdftex.def Info: example_static_objects_30.png  used on input line 261.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_static_objects_40.png, id=155, 257.96375pt x 251.94125pt>
+File: example_static_objects_40.png Graphic file (type png)
+<use example_static_objects_40.png>
+Package pdftex.def Info: example_static_objects_40.png  used on input line 266.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<example_dynamic_objects_0.png, id=157, 257.96375pt x 251.94125pt>
+File: example_dynamic_objects_0.png Graphic file (type png)
+<use example_dynamic_objects_0.png>
+Package pdftex.def Info: example_dynamic_objects_0.png  used on input line 280.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_objects_10.png, id=158, 257.96375pt x 251.94125pt>
+File: example_dynamic_objects_10.png Graphic file (type png)
+<use example_dynamic_objects_10.png>
+Package pdftex.def Info: example_dynamic_objects_10.png  used on input line 285.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_objects_20.png, id=159, 257.96375pt x 251.94125pt>
+File: example_dynamic_objects_20.png Graphic file (type png)
+<use example_dynamic_objects_20.png>
+Package pdftex.def Info: example_dynamic_objects_20.png  used on input line 290.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_objects_30.png, id=160, 257.96375pt x 251.94125pt>
+File: example_dynamic_objects_30.png Graphic file (type png)
+<use example_dynamic_objects_30.png>
+Package pdftex.def Info: example_dynamic_objects_30.png  used on input line 295.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+<example_dynamic_objects_40.png, id=161, 257.96375pt x 251.94125pt>
+File: example_dynamic_objects_40.png Graphic file (type png)
+<use example_dynamic_objects_40.png>
+Package pdftex.def Info: example_dynamic_objects_40.png  used on input line 300.
+(pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 306.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 306.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 188.
- [3 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png>]
+(babel)             in language append on input line 306.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 188.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 191.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 191.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 191.
+(babel)             in language append on input line 310.
+[4 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_0.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_10.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_20.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_30.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_40.png>]
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 202.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 202.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 202.
+(babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 205.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 205.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 205.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 208.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 208.
+(babel)             in language append on input line 318.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 208.
- (/Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.bbl
+(babel)             in language append on input line 318.
+ [5 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_objects_0.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_objects_10.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_objects_20.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_objects_30.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_objects_40.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_objects_0.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_objects_10.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_objects_20.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_objects_30.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_objects_40.png>]
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 318.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 318.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 318.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 319.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 319.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 319.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 320.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 320.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 320.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 323.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 323.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 323.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 325.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 325.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 325.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 327.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 327.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 327.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 329.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 329.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 329.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 332.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 332.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 332.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 335.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 335.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 335.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 338.
+ [6]
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 338.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 366.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 366.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 366.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 368.
+ (/usr/local/texlive/2018/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 368.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 372.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 372.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 372.
+Package babel Info: Redefining german shorthand "f
+(babel)             in language append on input line 372.
+Package babel Info: Redefining german shorthand "|
+(babel)             in language append on input line 372.
+Package babel Info: Redefining german shorthand "~
+(babel)             in language append on input line 372.
+ [7] (/Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 10--13
 []\OT1/cmr/m/n/12 Waymo-Research, ``Waymo-open-dataset/protos.'' []$\OT1/cmtt/m/n/12 https : / / github . com /
  []
@@ -1908,19 +2078,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 10--13
 \OT1/cmtt/m/n/12 waymo-[]research / waymo-[]open-[]dataset / tree / master / waymo _ open _ dataset /
  []
 
-Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 20.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 20.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 20.
-Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 20.
-Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 20.
-Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 20.
-[4]
+
 Underfull \hbox (badness 3895) in paragraph at lines 30--33
 []\OT1/cmr/m/n/12 Waymo-Research, ``Way-mo open da-ta-set mo-ti-on tu-to-ri-al.'' []$\OT1/cmtt/m/n/12 https : / / github .
  []
@@ -1931,41 +2089,41 @@ Underfull \hbox (badness 10000) in paragraph at lines 30--33
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 214.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 378.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 214.
+(babel)             in language append on input line 378.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 214.
+(babel)             in language append on input line 378.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 214.
+(babel)             in language append on input line 378.
 Package babel Info: Redefining german shorthand "f
-(babel)             in language  on input line 214.
+(babel)             in language append on input line 378.
 Package babel Info: Redefining german shorthand "|
-(babel)             in language  on input line 214.
+(babel)             in language append on input line 378.
 Package babel Info: Redefining german shorthand "~
-(babel)             in language  on input line 214.
- [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 214.
+(babel)             in language append on input line 378.
+ [8]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 378.
  (/Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 214.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 214.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 378.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 378.
 Package rerunfilecheck Info: File `motion-prediction.out' has not changed.
-(rerunfilecheck)             Checksum: EE0B572BF9611678BCC8FE8EDEE8092F;1039.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 214.
+(rerunfilecheck)             Checksum: AD60FE97BF0C99A4B70FCFC5204D73F7;1568.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 378.
  ) 
 Here is how much of TeX's memory you used:
- 20278 strings out of 492649
- 374353 string characters out of 6129622
- 474306 words of memory out of 5000000
- 23971 multiletter control sequences out of 15000+600000
+ 21297 strings out of 492649
+ 394010 string characters out of 6129622
+ 521455 words of memory out of 5000000
+ 24939 multiletter control sequences out of 15000+600000
  540349 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,6n,42p,10580b,1257s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on /Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.pdf (5 pages, 165763 bytes).
+ 42i,8n,42p,10580b,1247s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on /Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/motion-prediction.pdf (8 pages, 510974 bytes).
 PDF statistics:
- 179 PDF objects out of 1000 (max. 8388607)
- 158 compressed objects within 2 object streams
- 40 named destinations out of 1000 (max. 500000)
- 126 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 291 PDF objects out of 1000 (max. 8388607)
+ 236 compressed objects within 3 object streams
+ 78 named destinations out of 1000 (max. 500000)
+ 249 words of extra memory for PDF output out of 10000 (max. 10000000)
 
