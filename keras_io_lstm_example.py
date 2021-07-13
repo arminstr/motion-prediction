@@ -105,7 +105,7 @@ def generate_movies(n_samples=1200, n_frames=15):
     shifted_movies[shifted_movies >= 1] = 1
     return noisy_movies, shifted_movies
 
-epochs = 200  # In practice, you would need hundreds of epochs.
+epochs = 2  # In practice, you would need hundreds of epochs.
 
 noisy_movies, shifted_movies = generate_movies(n_samples=1200)
 print(noisy_movies[0])

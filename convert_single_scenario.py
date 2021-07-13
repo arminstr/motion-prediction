@@ -131,12 +131,7 @@ class tf_example_scenario:
                                                         )
                 i += 1
         else:
-            if timestep > 10:
-                self.__evaluate_future_ego_pos(scenario, timestep-10)
-            elif timestep < 10:
-                self.__evaluate_past_ego_pos(scenario, timestep)
-            else:
-                sys.exit('Wrong Time Reference Provided! Exiting!')
+            self.__evaluate_past_ego_pos(scenario, 9)
 
             self.__evaluate_map(scenario, timestep)
     
@@ -167,12 +162,7 @@ class tf_example_scenario:
                     j += 1
                 i += 1
         else:
-            if timestep > 9:
-                self.__evaluate_future_ego_pos(scenario, timestep-10)
-            elif timestep < 10:
-                self.__evaluate_past_ego_pos(scenario, timestep)
-            else:
-                sys.exit('Wrong Time Reference Provided! Exiting!')
+            self.__evaluate_past_ego_pos(scenario, 9)
             if timestep < 10:
                 self.__evaluate_past(scenario, timestep)
 
@@ -204,12 +194,7 @@ class tf_example_scenario:
                     j += 1
                 i += 1
         else:
-            if timestep > 9:
-                self.__evaluate_future_ego_pos(scenario, timestep-10)
-            elif timestep < 10:
-                self.__evaluate_past_ego_pos(scenario, timestep)
-            else:
-                sys.exit('Wrong Time Reference Provided! Exiting!')
+            self.__evaluate_past_ego_pos(scenario, 9)
             if timestep > 9:
                 self.__evaluate_future(scenario, timestep)
 
