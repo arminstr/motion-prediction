@@ -321,7 +321,29 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             keras
             tensorflow
         \subsubsection{Architektur}
-            bild und erklärung
+            \begin{lstlisting}[language=bash, caption=Ausgabe des model.summary() Aufrufs, label={lst:summarylisting}]
+            _________________________________________________________________
+            Layer (type)                 Output Shape              Param #   
+            =================================================================
+            conv_lst_m2d (ConvLSTM2D)    (None, 10, 128, 128, 128) 1651712   
+            _________________________________________________________________
+            batch_normalization (BatchNo (None, 10, 128, 128, 128) 512       
+            _________________________________________________________________
+            conv_lst_m2d_1 (ConvLSTM2D)  (None, 10, 128, 128, 128) 1180160   
+            _________________________________________________________________
+            batch_normalization_1 (Batch (None, 10, 128, 128, 128) 512       
+            _________________________________________________________________
+            conv_lst_m2d_2 (ConvLSTM2D)  (None, 10, 128, 128, 128) 131584    
+            _________________________________________________________________
+            batch_normalization_2 (Batch (None, 10, 128, 128, 128) 512       
+            _________________________________________________________________
+            conv3d (Conv3D)              (None, 10, 128, 128, 1)   3457      
+            =================================================================
+            Total params: 2,968,449
+            Trainable params: 2,967,681
+            Non-trainable params: 768
+            _________________________________________________________________
+            \end{lstlisting}
     \subsection{Training}
         \paragraph{Hardware} Nvidia GeForce 1060
         \subsubsection{Spezifische Loss-Funktion}
