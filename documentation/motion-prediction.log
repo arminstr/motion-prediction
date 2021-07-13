@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.14)  13 JUL 2021 16:55
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.3.14)  13 JUL 2021 17:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1853,10 +1853,6 @@ File: example_dynamic_map_40.png Graphic file (type png)
 <use example_dynamic_map_40.png>
 Package pdftex.def Info: example_dynamic_map_40.png  used on input line 207.
 (pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
 Package babel Info: Redefining german shorthand "f
 (babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "|
@@ -1869,7 +1865,7 @@ Package babel Info: Redefining german shorthand "|
 (babel)             in language append on input line 213.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language append on input line 213.
-[3 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_map.png>]
+ [3 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_static_map.png>]
 Package babel Info: Redefining german shorthand "f
 (babel)             in language append on input line 214.
 Package babel Info: Redefining german shorthand "|
@@ -1901,10 +1897,6 @@ File: example_static_objects_40.png Graphic file (type png)
 <use example_static_objects_40.png>
 Package pdftex.def Info: example_static_objects_40.png  used on input line 266.
 (pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
 <example_dynamic_objects_0.png, id=157, 257.96375pt x 251.94125pt>
 File: example_dynamic_objects_0.png Graphic file (type png)
 <use example_dynamic_objects_0.png>
@@ -1930,9 +1922,6 @@ File: example_dynamic_objects_40.png Graphic file (type png)
 <use example_dynamic_objects_40.png>
 Package pdftex.def Info: example_dynamic_objects_40.png  used on input line 300.
 (pdftex.def)             Requested size: 81.9406pt x 80.02698pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
 Package babel Info: Redefining german shorthand "f
 (babel)             in language append on input line 306.
 Package babel Info: Redefining german shorthand "|
@@ -1951,7 +1940,7 @@ Package babel Info: Redefining german shorthand "|
 (babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "~
 (babel)             in language append on input line 310.
-[4 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_0.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_10.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_20.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_30.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_40.png>]
+ [4 </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_0.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_10.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_20.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_30.png> </Users/armin/CloudStation/06_hochschule/02_MAPR/04_vorlesungen/04_anwendungen_der_ki/01_code/motion-prediction/documentation/example_dynamic_map_40.png>]
 Package babel Info: Redefining german shorthand "f
 (babel)             in language append on input line 310.
 Package babel Info: Redefining german shorthand "|

@@ -167,7 +167,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Die statische Repräsentation das Scenarios erfordert eine einmalige Konvertierung der Karte. 
         Diese bleibt dann für den gesamten Zeitraum des Szenarios konstant.
 
-        \begin{figure}[h]
+        \begin{figure}[ht]
             \centering
             \includegraphics[width=0.3\textwidth]{example_static_map.png}
             \caption{Beispiel einer in das Raster übertragenen Karte}
@@ -181,7 +181,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             Hier wird die Karte für die Zeitschritte -1~s also dem Start der Aufzeichnung, 0~s entsprechend dem gegenwärtigen Zeitschritt, 
             sowie den zukünftigen Zeitschritten +1~s und +2~s dargestellt. Datengrundlage ist das zweite Szenario des Validierungsdatensatzes. 
             
-            \begin{figure}[h]
+            \begin{figure}[ht]
                 \centering
                 \begin{subfigure}[b]{0.18\textwidth}
                     \includegraphics[width=\textwidth]{example_dynamic_map_0.png}
@@ -240,7 +240,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Da bei der Erstellung der Bilder für die Einfärbung eine Heatmap verwendet wir, werden stets die höchsten Werte in der hellsten Farbe dargestellt. 
         Deshalb ist die Karte in Abbildung~\ref{fig:stat_map} auch deutlich heller eingezeichnet als in Abbildung~\ref{fig:stat_objects}.
 
-        \begin{figure}[h]
+        \begin{figure}[ht]
             \centering
             \begin{subfigure}[b]{0.18\textwidth}
                 \includegraphics[width=\textwidth]{example_static_objects_0.png}
@@ -274,7 +274,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         in dessen lokales Koordinatensystem transformiert werden. Die Information darüber welches Fahrzeug das autonom agierende ist, 
         kann ebenfalls dem Protobuf entnommen werden. Die dynamische Darstellung der Objekte wird in Abbildung~\ref{fig:dyn_objects} anhand des zweiten Scenarios aus dem Validierungsdatensatz gezeigt.
         
-        \begin{figure}[h]
+        \begin{figure}[ht]
             \centering
             \begin{subfigure}[b]{0.18\textwidth}
                 \includegraphics[width=\textwidth]{example_dynamic_objects_0.png}
