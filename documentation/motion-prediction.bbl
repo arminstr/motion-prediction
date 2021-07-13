@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{ettinger2021large}
+S.~Ettinger, S.~Cheng, B.~Caine, C.~Liu, H.~Zhao, S.~Pradhan, Y.~Chai, B.~Sapp,
+  C.~Qi, Y.~Zhou, Z.~Yang, A.~Chouard, P.~Sun, J.~Ngiam, V.~Vasudevan,
+  A.~McCauley, J.~Shlens, and D.~Anguelov, ``Large scale interactive motion
+  forecasting for autonomous driving : The waymo open motion dataset,'' 2021.
+
+\bibitem{waymo2021github}
+Waymo-Research, ``Waymo-open-dataset/protos.''
+  \url{https://github.com/waymo-research/waymo-open-dataset/tree/master/waymo_open_dataset/protos}
+  [{2021-07-13}], 2021.
+
+\bibitem{Yonghwan2020}
+Y.~Jeong, S.~Kim, and K.~Yi, ``Surround vehicle motion prediction using
+  lstm-rnn for motion planning of autonomous vehicles at multi-lane turn
+  intersections,'' {\em IEEE Open Journal of Intelligent Transportation
+  Systems}, vol.~1, pp.~2--14, 2020.
+
+\bibitem{Jingyuan2018}
+J.~Wu, J.~Ruenz, and M.~Althoff, ``Probabilistic map-based pedestrian motion
+  prediction taking traffic participants into consideration,'' in {\em 2018
+  IEEE Intelligent Vehicles Symposium (IV)}, pp.~1285--1292, 2018.
+
+\bibitem{Keras2021}
+A.~Joshi, ``Next-frame video prediction with convolutional lstms.''
+  \url{https://keras.io/examples/vision/conv_lstm/} [{2021-07-13}], 2021.
+
+\bibitem{Tutorial2021}
+Waymo-Research, ``Waymo open dataset motion tutorial.''
+  \url{https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_motion.ipynb}
+  [{2021-07-13}], 2021.
+
+\end{thebibliography}
