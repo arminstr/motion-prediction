@@ -31,7 +31,7 @@ GRID_SIZE = 128
 # By increasing this parameter the model sees more data during training. 
 # More data should increase the models performance to predict vehicle movement over a wider varity of scenarios and points in time. 
 # A value of 30 means that the model sees the first 3 seconds of each scenario during training.
-TIME_STEPS_100MS = 30
+TIME_STEPS_100MS = 10
 
 # The parameter NUMBER_OF_FRAMES sets the amount of frames used for the cnn.
 # Since only one second of history is provided by waymo, the parameter is set to 10 frames each representing 100 ms of historical data.
@@ -142,7 +142,7 @@ def only_bright_pixels_custom(y_true, y_pred):
     squared_difference_vehicle = tf.square(y_true_masked_vehicle - y_pred_masked_vehicle)
     squared_difference_map = tf.square(y_true_masked_map - y_pred_masked_map)
 
-    return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.9 + tf.reduce_mean(squared_difference_map, axis=1) * 0.1
+    return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.5 + tf.reduce_mean(squared_difference_map, axis=1) * 0.5
 
 # Compile the custom model
 custom_model.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])

@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 from convert_single_scenario import tf_example_scenario
 
-scenario_name = 'tfrecord-00002-of-00150'
+scenario_name = 'tfrecord-00001-of-00150'
 
 PATHNAME = '/media/dev/data/waymo_motion/validation'
 GRID_SIZE = 128
@@ -78,12 +78,12 @@ def only_bright_pixels_custom(y_true, y_pred):
     squared_difference_vehicle = tf.square(y_true_masked_vehicle - y_pred_masked_vehicle)
     squared_difference_map = tf.square(y_true_masked_map - y_pred_masked_map)
 
-    return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.9 + tf.reduce_mean(squared_difference_map, axis=1) * 0.1
+    return tf.reduce_mean(squared_difference_vehicle, axis=1) * 0.5 + tf.reduce_mean(squared_difference_map, axis=1) * 0.5
 
 seq.compile(loss=only_bright_pixels_custom, optimizer="adadelta", metrics=['mse'])
 
 # Include the epoch in the file name (uses `str.format`)
-checkpoint_path = "training_checkpoints/static-map-100-epochs-1e-1s/cp-0100.ckpt.index"
+checkpoint_path = "training_checkpoints/dynamic-map-200-epochs-1e-1s-custom-loss-kernel-531/cp-0200.ckpt.index"
 checkpoint_dir = os.path.dirname(checkpoint_path)
 latest = tf.train.latest_checkpoint(checkpoint_dir)
 # Loads the weights
@@ -96,10 +96,10 @@ print("Starting evaluation... ")
 def postprocess_objects(frame):
     reduced_max = tf.reduce_max(frame)
     reduced_mean = tf.reduce_mean(frame)
-    threshold_objects = (reduced_max + reduced_mean) / 2
+    threshold_objects = reduced_max * 0.5 # (reduced_max + reduced_mean) / 2
     mask_objects = tf.math.greater(frame, threshold_objects)
     mask_objects = tf.cast(mask_objects, dtype=tf.float32)
-    return mask_objects * 0.845
+    return mask_objects * reduced_max
 
 def postprocess_map(frame):
     reduced_max = tf.reduce_max(frame)
@@ -208,37 +208,28 @@ def load_scenario(n_frames=10):
 
 def predict_future_frame(frames):
     pred_frames = seq.predict(frames)
-    plt.subplot(1, 5, 1)
-    plt.imshow(frames[0, 6])
-    plt.subplot(1, 5, 2)
-    plt.imshow(frames[0, 7])
-    plt.subplot(1, 5, 3)
-    plt.imshow(frames[0, 8])
-    plt.subplot(1, 5, 4)
-    plt.imshow(frames[0, 9])
-    plt.show()
+    
+    # corr_img = np.zeros((4, 64, 64, 1))
+    # corr_img[0] = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 0:64], postprocess_map(frames[0, 9])[0:64, 0:64])
+    # corr_img[1]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 0:64], postprocess_map(frames[0, 9])[64:128, 0:64])
+    # corr_img[2]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 64:128], postprocess_map(frames[0, 9])[64:128, 64:128])
+    # corr_img[3]  = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 64:128], postprocess_map(frames[0, 9])[0:64, 64:128])
 
-    corr_img = np.zeros((4, 64, 64, 1))
-    corr_img[0] = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 0:64], postprocess_map(frames[0, 9])[0:64, 0:64])
-    corr_img[1]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 0:64], postprocess_map(frames[0, 9])[64:128, 0:64])
-    corr_img[2]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 64:128], postprocess_map(frames[0, 9])[64:128, 64:128])
-    corr_img[3]  = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 64:128], postprocess_map(frames[0, 9])[0:64, 64:128])
+    # unravel_max = np.zeros((4, 3))
+    # for i in range(0, 4):
+    #     unravel_max[i] = np.unravel_index(np.argmax(corr_img[i]), corr_img[i].shape)
 
-    unravel_max = np.zeros((4, 3))
-    for i in range(0, 4):
-        unravel_max[i] = np.unravel_index(np.argmax(corr_img[i]), corr_img[i].shape)
+    # center_offset = 32
+    # center = np.array((center_offset, center_offset, 0))
+    # radius_from_center = np.sqrt(center_offset*center_offset+center_offset*center_offset)
 
-    center_offset = 32
-    center = np.array((center_offset, center_offset, 0))
-    radius_from_center = np.sqrt(center_offset*center_offset+center_offset*center_offset)
+    # unravel_max = (unravel_max - center) * radius_from_center
+    # map_offset =  (unravel_max.sum(axis=0)/radius_from_center) / 4
 
-    unravel_max = (unravel_max - center) * radius_from_center
-    map_offset =  (unravel_max.sum(axis=0)/radius_from_center) / 4
+    # map_shift_angle = np.arctan2(radius_from_center * (1 + unravel_max.sum(axis=0)[1]), radius_from_center * (1 + unravel_max.sum(axis=0)[0]))/4
 
-    map_shift_angle = np.arctan2(radius_from_center * (1 + unravel_max.sum(axis=0)[1]), radius_from_center * (1 + unravel_max.sum(axis=0)[0]))/4
-
-    # print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
-    # print("shift angle: ", map_shift_angle)
+    # # print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
+    # # print("shift angle: ", map_shift_angle)
 
     FILEPATH = PATHNAME + '/validation_tfexample.' + scenario_name
 
@@ -257,57 +248,25 @@ def predict_future_frame(frames):
     prediction = np.add(map_masked, objects)
     # CONTROL: uncommenting the line below disables the prediction data improvement
     # prediction = pred_frames[0, 9]
-
-    plt.subplot(1, 5, 5)
-    plt.imshow(prediction)
     return prediction
 
+# TODO: visualization with comparison to reference images
+
+predicted_frames = np.zeros((30, 128, 128, 1))
 input_frames = load_scenario()
-frames = input_frames[np.newaxis, 0]
+updated_input = input_frames
+# Predict 30 Frames
+for j in range(10):
+    # predict single frame and add it to the predicted_frames
 
-pred = np.zeros((70, 128, 128, 1))
-pred[0] = predict_future_frame(frames)
+    predicted_frames[j] = predict_future_frame(updated_input[np.newaxis, 0])
+    updated_input = np.delete(updated_input, 0, 1)
+    predicted_frame = np.array([predicted_frames[j]])
+    updated = np.concatenate((updated_input[0], predicted_frame), axis=0)
+    updated_input = np.zeros((1, 10, 128, 128, 1))
+    updated_input[0] = updated
 
-frames = np.zeros((10, 128, 128, 1))
-frames[0:9] = input_frames[0][1:10]
-frames[9] = pred[0]
-
-frames = np.expand_dims(frames, axis=0)
-pred[1] = predict_future_frame(frames)
-
-frames = np.zeros((10, 128, 128, 1))
-frames[0:8] = input_frames[0][2:10]
-frames[8:10] = pred[0:2]
-
-frames = np.expand_dims(frames, axis=0)
-pred[2] = predict_future_frame(frames)
-
-frames = np.zeros((10, 128, 128, 1))
-frames[0:7] = input_frames[0][3:10]
-frames[7:10] = pred[0:3]
-
-frames = np.expand_dims(frames, axis=0)
-pred[3] = predict_future_frame(frames)
-
-frames = np.zeros((10, 128, 128, 1))
-frames[0:6] = input_frames[0][4:10]
-frames[6:10] = pred[0:4]
-
-frames = np.expand_dims(frames, axis=0)
-pred[4] = predict_future_frame(frames)
-
-frames = np.zeros((10, 128, 128, 1))
-frames[0:5] = input_frames[0][5:10]
-frames[5:10] = pred[0:5]
-
-frames = np.expand_dims(frames, axis=0)
-pred[5] = predict_future_frame(frames)
-
-frames = np.zeros((10, 128, 128, 1))
-frames[0:4] = input_frames[0][6:10]
-frames[4:10] = pred[0:6]
-
-frames = np.expand_dims(frames, axis=0)
-pred[6] = predict_future_frame(frames)
-
-# TODO: visualization with comparison to refernce images
+for i in range(1, 10):
+    plt.subplot(1, 10, i)
+    plt.imshow(updated_input[0][i])
+plt.show()
