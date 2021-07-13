@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{subcaption}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -142,8 +143,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Dabei werden allerdings nur die Einträge geladen die für die Rasterisierung der Objekte notwendig sind. 
         Es werden immer alle Zeitschritte geladen und anschließend konvertiert. 
         Dies beinhaltetd die vergangenen, den aktuellen und die zukünftigen Elemente des Protobufs.
-    
-    \pagebreak
+
     \subsection{Konvertierung der Karte}
         Die Karteninformation ist Teil des scenario.proto und wird in Form des map.proto in jedem Szenario bereitgestellt.
         Ein Auszug aus der map.proto Definition der in Listing~\ref{lst:maplisting} dargestellt wird zeigt diese Liste und die Definition der Punkte. 
@@ -167,7 +167,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Die statische Repräsentation das Scenarios erfordert eine einmalige Konvertierung der Karte. 
         Diese bleibt dann für den gesamten Zeitraum des Szenarios konstant.
 
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \includegraphics[width=0.3\textwidth]{example_static_map.png}
             \caption{Beispiel einer in das Raster übertragenen Karte}
@@ -181,7 +181,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             Hier wird die Karte für die Zeitschritte -1~s also dem Start der Aufzeichnung, 0~s entsprechend dem gegenwärtigen Zeitschritt, 
             sowie den zukünftigen Zeitschritten +1~s und +2~s dargestellt. Datengrundlage ist das zweite Szenario des Validierungsdatensatzes. 
             
-            \begin{figure}[ht]
+            \begin{figure}[H]
                 \centering
                 \begin{subfigure}[b]{0.18\textwidth}
                     \includegraphics[width=\textwidth]{example_dynamic_map_0.png}
@@ -210,7 +210,6 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
                 \caption{Beispiel für eine dynamische gerasterte Karte}\label{fig:dyn_maps}
             \end{figure}
 
-    \newpage
     \subsection{Konvertierung der Objekte}
         Der Protobuf enthält Informationen über die Größe sowie globale Position und Orienierung der Objekte. 
         Dadurch können die vier 2D-Eckkoordinaten der Objekte berechnet werden. Um diese in das 2D-Raster zu übertragen wird die Grundfläche der Box entlang der Diagonale in  
@@ -240,7 +239,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Da bei der Erstellung der Bilder für die Einfärbung eine Heatmap verwendet wir, werden stets die höchsten Werte in der hellsten Farbe dargestellt. 
         Deshalb ist die Karte in Abbildung~\ref{fig:stat_map} auch deutlich heller eingezeichnet als in Abbildung~\ref{fig:stat_objects}.
 
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \begin{subfigure}[b]{0.18\textwidth}
                 \includegraphics[width=\textwidth]{example_static_objects_0.png}
@@ -274,7 +273,7 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         in dessen lokales Koordinatensystem transformiert werden. Die Information darüber welches Fahrzeug das autonom agierende ist, 
         kann ebenfalls dem Protobuf entnommen werden. Die dynamische Darstellung der Objekte wird in Abbildung~\ref{fig:dyn_objects} anhand des zweiten Scenarios aus dem Validierungsdatensatz gezeigt.
         
-        \begin{figure}[ht]
+        \begin{figure}[H]
             \centering
             \begin{subfigure}[b]{0.18\textwidth}
                 \includegraphics[width=\textwidth]{example_dynamic_objects_0.png}
@@ -314,61 +313,190 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         \paragraph{Konvertierungszeit} Durch die große Datenmenge der Protobufs und die ineffiziente Programmierung des Konvertierungsalgorithmus, 
         benötigt dieser zwischen 150~s und 200~s für die Konvertierung eines Szenarios.
 
-\pagebreak
 \section{ConvLSTM für Bewegungsvorhersage}
+    Das Convolutional LSTM bietet die Möglichkeit die Informationen auf Bildebene miteinander zu assoziieren 
+    und in einen Zeitlichen Kontext zu bringen. Aufgrund dieser Eigenschaften bietet es eine gute Grundlage für den Anwendungsfall.
     \subsection{Modell}
-        \subsubsection{Verwendete Bibliotheken}
-            keras
-            tensorflow
+        Für die Erstellung des Modells wurden tensorflow und keras eingesetzt. 
+        Diese beiden Bibliotheken bieten die Möglichkeit mit einfachen Interfaces komplexe funktionalitäten umzusetzen.
         \subsubsection{Architektur}
-            \begin{lstlisting}[language=bash, caption=Ausgabe des model.summary() Aufrufs, label={lst:summarylisting}]
-            _________________________________________________________________
-            Layer (type)                 Output Shape              Param #   
-            =================================================================
-            conv_lst_m2d (ConvLSTM2D)    (None, 10, 128, 128, 128) 1651712   
-            _________________________________________________________________
-            batch_normalization (BatchNo (None, 10, 128, 128, 128) 512       
-            _________________________________________________________________
-            conv_lst_m2d_1 (ConvLSTM2D)  (None, 10, 128, 128, 128) 1180160   
-            _________________________________________________________________
-            batch_normalization_1 (Batch (None, 10, 128, 128, 128) 512       
-            _________________________________________________________________
-            conv_lst_m2d_2 (ConvLSTM2D)  (None, 10, 128, 128, 128) 131584    
-            _________________________________________________________________
-            batch_normalization_2 (Batch (None, 10, 128, 128, 128) 512       
-            _________________________________________________________________
-            conv3d (Conv3D)              (None, 10, 128, 128, 1)   3457      
-            =================================================================
-            Total params: 2,968,449
-            Trainable params: 2,967,681
-            Non-trainable params: 768
-            _________________________________________________________________
+            Das Netzwerk folgt der Architektur die in Listing~\ref{lst:summarylisting} dargestellt ist. Es besteht aus mehreren Convolutional LSTM Layern die über eine jeweils kleinere Fenstergröße verfügen.
+            Um die generalisierung des Netzwerks zu verbessern und geringere Trainingszeiten zu ereichen werden Normalisierungs Layers eingefügt. 
+            Die Netzwerkarchitektur wurde Aufgrund der guten Ergebnisse, die im Beispiel von Keras~\cite{Keras2021} erziehlt wurden, gewählt.
+            \begin{lstlisting}[caption=Ausgabe des model.summary() Aufrufs, label={lst:summarylisting}, basicstyle=\tiny, numbers=none]
+                    _________________________________________________________________
+                    Layer (type)                 Output Shape              Param #   
+                    =================================================================
+                    conv_lst_m2d (ConvLSTM2D)    (None, 10, 128, 128, 128) 1651712   
+                    _________________________________________________________________
+                    batch_normalization (BatchNo (None, 10, 128, 128, 128) 512       
+                    _________________________________________________________________
+                    conv_lst_m2d_1 (ConvLSTM2D)  (None, 10, 128, 128, 128) 1180160   
+                    _________________________________________________________________
+                    batch_normalization_1 (Batch (None, 10, 128, 128, 128) 512       
+                    _________________________________________________________________
+                    conv_lst_m2d_2 (ConvLSTM2D)  (None, 10, 128, 128, 128) 131584    
+                    _________________________________________________________________
+                    batch_normalization_2 (Batch (None, 10, 128, 128, 128) 512       
+                    _________________________________________________________________
+                    conv3d (Conv3D)              (None, 10, 128, 128, 1)   3457      
+                    =================================================================
+                    Total params: 2,968,449
+                    Trainable params: 2,967,681
+                    Non-trainable params: 768
+                    _________________________________________________________________
             \end{lstlisting}
+
+            Insgesamt beinhaltet das Modell 2967681 trainierbare Parameter. 
+            Auf dem System welches zum Training verwendet werden soll werden diese Parameter durch float32 repräsentiert welcher 4~Byte im Speicher benötigt.
+            Dies führt auf Basis der Berechnung in Formel~\ref{memory-size} zu einem minimal benötigten Speicherbedarf von 11.87~GB. 
+            Dieser muss auf der zum Training verwendeten Platform Platz im Arbeitsspeicher finden Können.
+            \begin{align}
+                2967681 \cdot 4~Bytes = 11.87~GB
+                \label{memory-size}
+            \end{align}
     \subsection{Training}
-        \paragraph{Hardware} Nvidia GeForce 1060
+        Beim Training wurde zunächst die dynamische Darstellungsform angewandt. 
+        Diese lieferte allerdings transformierte und rotierte Bilder bei denen für eine erneute Prediktion die Transformation und Rotation bestimmt werden musste. 
+        Um diesen Prozess zu vereinfachen wurde deshalb das Training auf die statische Darstellungsform umgestellt.
         \subsubsection{Spezifische Loss-Funktion}
-	        Custom Data Generator implementation
+	        Da die Trainingsbilddaten viele Bereiche enthalten die für die Performance des Netzwerks nicht relevant sind, 
+            wurde eine für das Netzwerk zugeschnittene Loss funktion Implementiert. 
+            Diese Analysiert den Mean-Squared Error in verschiedenen Bereichen des predizierten Bildes. 
+            \paragraph{Zukünftige Aufenthaltsorte von Objekten} Hier wird der Mean-Squared Error für die Pixel in denen Sich das Objekt aufhalten sollte berechnet. 
+            Dieser wird mit einem Verhältnis von 80~\% gewichtet.
+            \paragraph{Hintergrund und Karte} Über den Rest des Bildes wird ebenfalls ein Mean-Squared Error Wert berechnet. 
+            Dies ist notwendig, da das Netzwerk sonst das gesamte Bild in Objektfarbe einfärben würde und dadurch eine hohe Genauigkeit erreicht.
+            Der Wert wird dann mit 20~\% gewichtet.
         \subsubsection{Generierung der Trainingsdaten zur Laufzeit}
-	        Custom Data Generator implementation
-        
+            Um das Training mit der gesamten Menge der Szenariodaten auf einer Platform mit beschränkten Ressourcen zu ermöglichen wurde ein Gernerator für Trainingsdaten implementiert.
+            Dieser verwendet eine Datenstruktur die Dateipfade enthält und lädt die Trainingsdaten immer erst zur Lauftzeit in den Arbeitsspeicher.
         \subsubsection{Gradient Accumulation}
-		    What is Gradient Accumulation
-            How was it implemented in this case
-        \subsubsection{Verschiedene Trainingsläufe}
-            Test123
+            Zudem wurde das Prinzip der Gradient Accumulation eingesetzt um den auf der Grafikkarte benötigten Speicherplatz zu reduzieren. 
+            Hierbei werden die Batches die zum Training verwendet werden aufgeteilt. Diese werden dann nacheinander trainiert. Der resultierende Gradient wird dann im Anschluss akkumuliert.
+            Dadurch entsteht beim Training der gleiche Effekt wie bei größeren Batch Größen. Der Speicherbedarf bleibt jedoch konstant klein.~\cite{Ttowardsdatascience2021}
+
 \pagebreak
 \section{Ergebnisse}
-    Der Ansatz ein Convolutional LSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse. 
-    Diese werden in den folgenden Paragraphen vorgestellt:
+    Der Ansatz ein Convolutional LSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse.
+    Alle Prediktionen von Abbildung~\ref{fig:out_low_dens} bis Abbildung~\ref{fig:out_static_brake} dienen der Veranschaulichung der Performance des ConvLSTMs. 
+    Besser Sichtbar sind diese jedoch in Form von Animationen. Diese können in dem beigefügten Jupyter Notebook inference.ipynb erzeugt werden. 
+    Hierbei wird die Datenkonvertierung nicht mehr durchgeführt. 
+
+    Für die Erstellung der Prediktionen wurde das Trainierte Convolutional LSTM verwendet. Für Prediktionen die über 100~ms hinaus gehen, wurde das Ergebnis als jeweils 10tes Bild wieder in das Netzwerk eingespeist.
 
     \paragraph{Geringe Objektdichte} In Szenarien mit gerninger Fahrzeugdichte passen die Ausgaben des Modells grundlegend zu den Refernzdaten des Validierungsdatensatzes.
-    Dies ist im folgenden Beispiel erkennbar. %TODO insert prediction for Sceanrio 38
+    Dies ist im folgenden Beispiel erkennbar. Besonders in Abblidung~\ref{fig:out_low_dens} bei +1~s ist gut zu sehen wie die Bewegung der drei größeren Objekte weiter prediziert wird. 
 
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_0.png}
+            \caption{-1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_1.png}
+            \caption{-0.5~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_2.png}
+            \caption{0~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_3.png}
+            \caption{+0.1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_4.png}
+            \caption{+1~s}
+        \end{subfigure}
+        \vspace{1cm}
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{output_low_dens_4.png}
+            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+        \end{subfigure}
+        \caption{Beispiel für Szenario mit geringer Objektdichte}\label{fig:out_low_dens}
+    \end{figure}
+
+    \pagebreak
     \paragraph{Komplexes Szenario} Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
-    Im folgenden Beispiel werden alle Objekte in die gleiche Richtung prediziert. %TODO insert prediction for Scenario 12
+    Im folgenden Beispiel werden alle Objekte in die gleiche Richtung prediziert. 
 
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_0.png}
+            \caption{-1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_1.png}
+            \caption{-0.5~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_2.png}
+            \caption{0~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_3.png}
+            \caption{+0.1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_4.png}
+            \caption{+1~s}
+        \end{subfigure}
+        \vspace{1cm}
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{output_opposite_4.png}
+            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+        \end{subfigure}
+        \caption{Beispiel für komplexes Szenario mit Gegenverkehr}\label{fig:out_opposite}
+    \end{figure}
+
+    \pagebreak
     \paragraph{Statisches Hindernis} Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge für eine statisches Hindernis am Straßenrand bremsen müssen. 
-    Hier liegen die Prediktionen relativ nah an den Refernzdaten. %TODO insert prediction for Scenario 50
+    Hier liegen die Prediktionen relativ nah an den Refernzdaten.
+
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_0.png}
+            \caption{-1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_1.png}
+            \caption{-0.5~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_2.png}
+            \caption{0~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_3.png}
+            \caption{+0.1~s}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.18\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_4.png}
+            \caption{+1~s}
+        \end{subfigure}
+        \vspace{1cm}
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{output_static_brake_4.png}
+            \caption{Vergrößerte Darstellung der Prediktion bei +1~s}
+        \end{subfigure}
+        \caption{Beispiel für Szenario mit Geschwindigkeitsdifferenz}\label{fig:out_static_brake}
+    \end{figure}
 
     \paragraph{Probleme durch nichtlineare Einfärbung bei Rasterisierung} Da bei der Datenverarbeitung eine 
     nichtlineare Funktion zum einfärben der Objekte und Kartendaten verwendet wurde, unterscheiden sich die Trainingsdaten 
@@ -387,9 +515,8 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
     \subsection{Lessons Learned und Future Work}
         \begin{itemize}
-            \item Convolutional LSTMs benötigen viel Grafikspeicher.
             \item Gradient Accumulation ermöglicht den Speicherbedarf für Zwischenergebnisse auf der GPU zu verringern.
-            \item Der Rechenaufwand für die Rasterisierung der Daten sollte nicht unterschätzt werden.
+            \item Der Rechenaufwand für die Rasterisierung der Daten, sowie der benötigte Speicherbedarf für Convolutional LSTMs sollte nicht unterschätzt werden.
             \item Die Inference Zeit ist deutlich schlechter als bei einer Bild-Klassifikation. Dies liegt an der größe des Netzwerks und der Menge der Eingangsdaten. Dies sollte für die praktische Verwendbarkeit des ConvLSTM+Raster Ansatzes berücksichtigt werden. 
             \item Durch höhere Auflösung des Rasters könnten Objekte besser unterschieden und unabhängig voneinander prediziert werden. Dies führt allerdings zu einer geringeren betrachtbaren Kartengröße oder zu einem größeren und langsameren Netzwerk.
         \end{itemize}

@@ -31,4 +31,9 @@ Waymo-Research, ``Waymo open dataset motion tutorial.''
   \url{https://github.com/waymo-research/waymo-open-dataset/blob/master/tutorial/tutorial_motion.ipynb}
   [{2021-07-13}], 2021.
 
+\bibitem{Ttowardsdatascience2021}
+R.~Haleva, ``What is gradient accumulation in deep learning?.''
+  \url{https://towardsdatascience.com/what-is-gradient-accumulation-in-deep-learning-ec034122cfa}
+  [{2021-07-13}], 2021.
+
 \end{thebibliography}
