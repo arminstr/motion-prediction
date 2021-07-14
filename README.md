@@ -16,7 +16,7 @@ pip install -r m-p-python-req.txt
 Nun müssen noch die absoluten Pfade im Notebook angepasst werden. 
 Anschließend sollte das Inference Notebook ausführbar sein. 
 
-Fragen können gerne an armin.atraller@hs-augsburg.de gestellt werden. 
+Fragen können gerne an armin.straller@hs-augsburg.de gestellt werden. 
 
 ## Weitere Infos
 - Eine GPU und CUDA sind notwendig für die Ausführung der Notbooks und Python Skripte
