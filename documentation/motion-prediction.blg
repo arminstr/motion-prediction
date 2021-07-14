@@ -3,36 +3,36 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: motion-prediction.aux
 The style file: ieeetr.bst
 Database file #1: motion-prediction.bib
-You've used 6 entries,
+You've used 7 entries,
             1876 wiz_defined-function locations,
-            507 strings with 4887 characters,
-and the built_in function-call counts, 1394 in all, are:
-= -- 107
-> -- 90
+            512 strings with 5100 characters,
+and the built_in function-call counts, 1519 in all, are:
+= -- 118
+> -- 94
 < -- 0
-+ -- 33
-- -- 27
-* -- 100
-:= -- 218
-add.period$ -- 6
-call.type$ -- 6
-change.case$ -- 6
++ -- 35
+- -- 28
+* -- 105
+:= -- 236
+add.period$ -- 7
+call.type$ -- 7
+change.case$ -- 7
 chr.to.int$ -- 0
-cite$ -- 6
-duplicate$ -- 52
-empty$ -- 138
-format.name$ -- 27
-if$ -- 330
+cite$ -- 7
+duplicate$ -- 56
+empty$ -- 156
+format.name$ -- 28
+if$ -- 362
 int.to.chr$ -- 0
-int.to.str$ -- 6
+int.to.str$ -- 7
 missing$ -- 2
-newline$ -- 21
-num.names$ -- 6
-pop$ -- 34
+newline$ -- 24
+num.names$ -- 7
+pop$ -- 40
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 42
+skip$ -- 46
 stack$ -- 0
 substring$ -- 51
 swap$ -- 16
@@ -41,6 +41,6 @@ text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 10
-width$ -- 7
-write$ -- 52
+while$ -- 11
+width$ -- 8
+write$ -- 60

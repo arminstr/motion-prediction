@@ -31,7 +31,7 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3}Vorverarbeitung der Daten}{2}{section.3}}
 \newlabel{sec:preprocessing}{{3}{2}{Vorverarbeitung der Daten}{section.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Einlesen des Protobuf}{2}{subsection.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Konvertierung der Karte}{3}{subsection.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Konvertierung der Karte}{2}{subsection.3.2}}
 \newlabel{lst:maplisting}{{1}{3}{Auszug aus map.proto}{lstlisting.1}{}}
 \@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Auszug aus map.proto}{3}{lstlisting.1}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Beispiel einer in das Raster \IeC {\"u}bertragenen Karte\relax }}{3}{figure.caption.1}}
@@ -43,33 +43,45 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Konvertierung der Objekte}{4}{subsection.3.3}}
 \newlabel{lst:objectlisting}{{2}{4}{Auszug aus scenario.proto}{lstlisting.2}{}}
 \@writefile{lol}{\contentsline {lstlisting}{\numberline {2}Auszug aus scenario.proto}{4}{lstlisting.2}}
-\@writefile{toc}{\contentsline {paragraph}{Dynamische Darstellungsform f\IeC {\"u}r Objekte}{4}{section*.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Beispiel f\IeC {\"u}r Objekte auf statischer Karte\relax }}{5}{figure.caption.4}}
 \newlabel{fig:stat_objects}{{3}{5}{Beispiel für Objekte auf statischer Karte\relax }{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Dynamische Darstellungsform f\IeC {\"u}r Objekte}{5}{section*.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Beispiel f\IeC {\"u}r Objekte in dynamischer Darstellungsform\relax }}{5}{figure.caption.6}}
 \newlabel{fig:dyn_objects}{{4}{5}{Beispiel für Objekte in dynamischer Darstellungsform\relax }{figure.caption.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Speicherung der Trainings- und Validierungsdaten}{5}{subsection.3.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Probleme bei der Datengenerierung}{5}{subsection.3.5}}
 \@writefile{toc}{\contentsline {paragraph}{Fehler durch Rasterisierung}{5}{section*.7}}
 \@writefile{toc}{\contentsline {paragraph}{Konvertierungszeit}{5}{section*.8}}
+\citation{Keras2021}
 \@writefile{toc}{\contentsline {section}{\numberline {4}ConvLSTM f\IeC {\"u}r Bewegungsvorhersage}{6}{section.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Modell}{6}{subsection.4.1}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Verwendete Bibliotheken}{6}{subsubsection.4.1.1}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Architektur}{6}{subsubsection.4.1.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Training}{6}{subsection.4.2}}
-\@writefile{toc}{\contentsline {paragraph}{Hardware}{6}{section*.9}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Spezifische Loss-Funktion}{6}{subsubsection.4.2.1}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Generierung der Trainingsdaten zur Laufzeit}{6}{subsubsection.4.2.2}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Gradient Accumulation}{6}{subsubsection.4.2.3}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}Verschiedene Trainingsl\IeC {\"a}ufe}{6}{subsubsection.4.2.4}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Ergebnisse}{7}{section.5}}
-\@writefile{toc}{\contentsline {paragraph}{Geringe Objektdichte}{7}{section*.10}}
-\@writefile{toc}{\contentsline {paragraph}{Komplexes Szenario}{7}{section*.11}}
-\@writefile{toc}{\contentsline {paragraph}{Statisches Hindernis}{7}{section*.12}}
-\@writefile{toc}{\contentsline {paragraph}{Probleme durch nichtlineare Einf\IeC {\"a}rbung bei Rasterisierung}{7}{section*.13}}
-\@writefile{toc}{\contentsline {paragraph}{Verbesserungsm\IeC {\"o}glichkeiten bei der spezifischen Loss-Funktion}{7}{section*.14}}
-\@writefile{toc}{\contentsline {paragraph}{Training mit l\IeC {\"a}ngeren Zeitabschnitten}{7}{section*.15}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Lessons Learned und Future Work}{7}{subsection.5.1}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Architektur}{6}{subsubsection.4.1.1}}
+\newlabel{lst:summarylisting}{{3}{6}{Ausgabe des model.summary() Aufrufs}{lstlisting.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}Ausgabe des model.summary() Aufrufs}{6}{lstlisting.3}}
+\newlabel{memory-size}{{1}{6}{Architektur}{equation.4.1}{}}
+\citation{Ttowardsdatascience2021}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Training}{7}{subsection.4.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Spezifische Loss-Funktion}{7}{subsubsection.4.2.1}}
+\@writefile{toc}{\contentsline {paragraph}{Zuk\IeC {\"u}nftige Aufenthaltsorte von Objekten}{7}{section*.9}}
+\@writefile{toc}{\contentsline {paragraph}{Hintergrund und Karte}{7}{section*.10}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Generierung der Trainingsdaten zur Laufzeit}{7}{subsubsection.4.2.2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Gradient Accumulation}{7}{subsubsection.4.2.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Ergebnisse}{8}{section.5}}
+\newlabel{sec:results}{{5}{8}{Ergebnisse}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Scenario mit geringer Dichte an Objekten}{9}{subsection.5.1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Beispiel f\IeC {\"u}r Szenario mit geringer Objektdichte\relax }}{9}{figure.caption.11}}
+\newlabel{fig:out_low_dens}{{5}{9}{Beispiel für Szenario mit geringer Objektdichte\relax }{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Komplexes Szenario mit unterschiedlichen Bewegungsrichtungen}{10}{subsection.5.2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Beispiel f\IeC {\"u}r komplexes Szenario mit Gegenverkehr\relax }}{10}{figure.caption.12}}
+\newlabel{fig:out_opposite}{{6}{10}{Beispiel für komplexes Szenario mit Gegenverkehr\relax }{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Szenario mit statischem Hindernis am Stra\IeC {\ss }enrand}{11}{subsection.5.3}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Beispiel f\IeC {\"u}r Szenario mit Geschwindigkeitsdifferenz\relax }}{11}{figure.caption.13}}
+\newlabel{fig:out_static_brake}{{7}{11}{Beispiel für Szenario mit Geschwindigkeitsdifferenz\relax }{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Beobachtete Probleme bei der Prediktion}{12}{subsection.5.4}}
+\@writefile{toc}{\contentsline {paragraph}{Probleme durch nichtlineare Einf\IeC {\"a}rbung bei Rasterisierung}{12}{section*.14}}
+\@writefile{toc}{\contentsline {paragraph}{Verbesserungsm\IeC {\"o}glichkeiten bei der spezifischen Loss-Funktion}{12}{section*.15}}
+\@writefile{toc}{\contentsline {paragraph}{Training mit l\IeC {\"a}ngeren Zeitabschnitten}{12}{section*.16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Lessons Learned und Future Work}{12}{subsection.5.5}}
 \bibdata{motion-prediction}
 \bibcite{ettinger2021large}{1}
 \bibcite{waymo2021github}{2}
@@ -77,4 +89,5 @@
 \bibcite{Jingyuan2018}{4}
 \bibcite{Keras2021}{5}
 \bibcite{Tutorial2021}{6}
+\bibcite{Ttowardsdatascience2021}{7}
 \bibstyle{ieeetr}

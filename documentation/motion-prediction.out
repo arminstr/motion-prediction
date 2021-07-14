@@ -10,12 +10,14 @@
 \BOOKMARK [2][-]{subsection.3.5}{Probleme bei der Datengenerierung}{section.3}% 10
 \BOOKMARK [1][-]{section.4}{ConvLSTM f\374r Bewegungsvorhersage}{}% 11
 \BOOKMARK [2][-]{subsection.4.1}{Modell}{section.4}% 12
-\BOOKMARK [3][-]{subsubsection.4.1.1}{Verwendete Bibliotheken}{subsection.4.1}% 13
-\BOOKMARK [3][-]{subsubsection.4.1.2}{Architektur}{subsection.4.1}% 14
-\BOOKMARK [2][-]{subsection.4.2}{Training}{section.4}% 15
-\BOOKMARK [3][-]{subsubsection.4.2.1}{Spezifische Loss-Funktion}{subsection.4.2}% 16
-\BOOKMARK [3][-]{subsubsection.4.2.2}{Generierung der Trainingsdaten zur Laufzeit}{subsection.4.2}% 17
-\BOOKMARK [3][-]{subsubsection.4.2.3}{Gradient Accumulation}{subsection.4.2}% 18
-\BOOKMARK [3][-]{subsubsection.4.2.4}{Verschiedene Trainingsl\344ufe}{subsection.4.2}% 19
-\BOOKMARK [1][-]{section.5}{Ergebnisse}{}% 20
-\BOOKMARK [2][-]{subsection.5.1}{Lessons Learned und Future Work}{section.5}% 21
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Architektur}{subsection.4.1}% 13
+\BOOKMARK [2][-]{subsection.4.2}{Training}{section.4}% 14
+\BOOKMARK [3][-]{subsubsection.4.2.1}{Spezifische Loss-Funktion}{subsection.4.2}% 15
+\BOOKMARK [3][-]{subsubsection.4.2.2}{Generierung der Trainingsdaten zur Laufzeit}{subsection.4.2}% 16
+\BOOKMARK [3][-]{subsubsection.4.2.3}{Gradient Accumulation}{subsection.4.2}% 17
+\BOOKMARK [1][-]{section.5}{Ergebnisse}{}% 18
+\BOOKMARK [2][-]{subsection.5.1}{Scenario mit geringer Dichte an Objekten}{section.5}% 19
+\BOOKMARK [2][-]{subsection.5.2}{Komplexes Szenario mit unterschiedlichen Bewegungsrichtungen}{section.5}% 20
+\BOOKMARK [2][-]{subsection.5.3}{Szenario mit statischem Hindernis am Stra\337enrand}{section.5}% 21
+\BOOKMARK [2][-]{subsection.5.4}{Beobachtete Probleme bei der Prediktion}{section.5}% 22
+\BOOKMARK [2][-]{subsection.5.5}{Lessons Learned und Future Work}{section.5}% 23
