@@ -88,32 +88,32 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
 \begin{abstract}
     Um vorausschauendes Fahren für Autonome Fahrzeuge zu ermöglichen, ist es notwendig die Bewegungen anderer Verkehrsteilnehmer vorherzusagen. 
-    Da das Verhalten von Fußgängern, Radfahreren und Autofahrern oft auf Interaktion basiert oder von Ortspezifischen Mustern abhängt, 
-    bietet es sich an ein Netzwerk mit historischen Informationen über das Verhalten der Verkehrsteilnehmer aufzubauen.
+    Da das Verhalten von Fußgängern, Radfahreren und Autofahrern oft auf Interaktion basiert oder von ortspezifischen Mustern abhängt, 
+    bietet es sich an ein Netzwerk mit Informationen über das Verhalten von Objekten im Straßenverkehr aufzubauen.
 	Diese Arbeit beschäftigt sich mit einem solchen Netzwerk zur Bewegungsvorhersage von Verkehrsteilnehmern.
     Als Datengrundlage wurde der im Frühjahr 2021 veröffentlichte Waymo Open Motion Datensatz verwendet. 
-    Das entwickelte Netzwerk verwendete bildbasierte Eingangsdaten welche eine gerasterte Darstellung der unterschiedlichen Szenarien verwendet.
-    Ein LSTM bietet dann die Möglichkeit Daten eines vergangen Zeitraums in Kontext zu bringen und ein eine bildliche Repräsentation eines zukünftigen Zustands auszugeben. 
-    Das aus der Arbeit resultierende Netzwerk ermöglicht grundlegende vorhersagen der Bewegungsrichtung ist aber zum aktuellen Entwicklungsstand nicht für den Einsatz in einem Autonomen Fahrzeug geeignet.
+    Das entwickelte Netzwerk verwendet bildbasierte Eingangsdaten, welche eine gerasterte Darstellung der unterschiedlichen Szenarien implementiert.
+    Ein LSTM bietet dann die Möglichkeit Daten eines vergangen Zeitraums in Kontext zu bringen und eine bildliche Repräsentation eines zukünftigen Zustands auszugeben. 
+    Das aus der Arbeit resultierende Netzwerk ermöglicht grundlegende Vorhersagen der Bewegungsrichtung ist aber zum aktuellen Entwicklungsstand nicht für den produktiven Einsatz geeignet.
 \end{abstract}
 
 \section{Problemstellung}
-    Die Problemstellung für die entwickelte Künstliche Intelligenz ist aus der Waymo Motion Prediction Challenge abgeleitet.
-    Hierbei soll auf Basis der Verkehrsdaten aus einer vergangenen Sekunde eine prädiktion für die folgenden acht Sekunden erfolgen.
+    Die Problemstellung für die entwickelte künstliche Intelligenz ist aus der Waymo Motion Prediction Challenge abgeleitet.
+    Hierbei soll auf Basis der Verkehrsdaten aus einer vergangenen Sekunde, eine Prediktion für die folgenden acht Sekunden erfolgen.
     Der dafür bereitgestellte Datensatz ist das Waymo Open Motion Dataset~\cite{ettinger2021large}. 
-    Dieses umfasst 574~Stunden und 1750~km an Verkehrsinformation und bietet somit genug Informationen für das Training eines Neuronalen Netzwerks.
+    Dieses umfasst 574~Stunden und 1750~km an Verkehrsinformation und bietet somit genug Eingangsdaten für das Training eines neuronalen Netzwerks.
 
     \subsection{Datengrundlage}
-        Im Datensatz von Waymo sind verschidene Informationen über die aktuelle Verkehrssituation enthalten. Diese können im Detail dem scenario.proto aus dem Anhang entnommen werden.
+        Im Datensatz von Waymo sind verschidene Informationen über die aktuelle Verkehrssituation enthalten. Diese können im Detail der scenario.proto Datei aus den Github Repository von Waymo Research entnommen werden.
         Teil des Scenarios ist auch eine Karte deren Details in der map.proto Datei definiert sind.~\cite{waymo2021github}
 
-        Auf die für diese Arbeit wichtigen Inhalte der Szenarien wird Kapitel über die \hyperref[sec:preprocessing]{Vorverarbeitung der Daten} eingegangen.
+        Auf die für diese Arbeit wichtigen Inhalte der Szenarien wird im Kapitel über die \hyperref[sec:preprocessing]{Vorverarbeitung der Daten} eingegangen.
 
 \newpage
 
 \section{Related Work und Entstehung der Projektidee}
     Es haben sich bereits andere Arbeiten mit der Vorhersage von Bewegungen im Straßenverkehr beschäftigt. 
-    Aufgrund der aktualität des Waymo Datensatzes sind zu diesem allerdings noch keine Veröffentlichungen bekannt. 
+    Aufgrund der Aktualität des Waymo Datensatzes sind zu diesem allerdings noch keine Veröffentlichungen bekannt. 
     Ein Datensatz mit ähnlichem Inhalt wurde für die Prediktion von anderen Fahrzeugen in der Arbeit von Jeong, Yonghwan verwendet. 
     Hierbei kam ein LSTM-RNN Netzwerk zum Einsatz.~\cite{Yonghwan2020}
     
@@ -122,16 +122,17 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
     Diese verwendet ein Raster welches die Aufenthaltswahrscheinlichkeit der Fußgänger darstellt.~\cite{Jingyuan2018}
 
     \subsection{Convolutional LSTM basierte Bewegungsvorhersage}
-    Auf Basis der aufgeführten Arbeiten und der zur verfügbaren Daten ist die grundlegende Idee für diese Arbeit entstanden. 
-    Die Verkehrsinformationen werden in ein Raster eingetragen und in Bildform als Eingangsdaten für das Convolutional-LSTM verwendet.
+    Auf Basis der aufgeführten Arbeiten und der verfügbaren Daten ist die grundlegende Idee für diese Arbeit entstanden. 
+    
+    Die Verkehrsinformationen werden in ein Raster eingetragen und in Bildform als Eingangsdaten für das Convolutional LSTM verwendet.
     Hierdurch können die Karten- und Positionsdaten der Verkehrsteilnehmer in Relation gebracht werden. 
     Die Historie der Bewegung wird dann durch die Eingangsbreite des LSTMs dargestellt. 
     Das Keras Beispiel \grqq Next-Frame Video Prediction with Convolutional LSTMs\grqq ~\cite{Keras2021} dient als Grundlage für die Umsetzung.
-    Da das Raster nur mit begrenzter Auflösung arbeitet kann es theoretisch vorkommen, dass das Autonome Fahrzeug 
+    Da das Raster nur mit begrenzter Auflösung arbeitet kann es theoretisch vorkommen, dass das autonome Fahrzeug 
     im Szenario das Raster verlässt. Um dies zu umgehen wird ein Ansatz eine Transformation des Szenarios in die Ego-Perspektive des autonomen Fahrzeugs beinhalten. 
     Im Folgenden wird daher von einer statischen oder dynamischen Darstellung gesprochen, wobei die dynamische Darstellung die Transformation in die Ego-Perspektive beinhaltet. 
-    Um eine Prediktion von bis zu 8~Sekunden zu ermöglichen, soll das Modell erneute Prediktionen auf basis der bereits predizierten Bilder erstellen. 
-    Dies wird wiederholt bis der benötigte Zeithorizont abgedeckt ist.  
+    Um eine Prediktion von bis zu 8~Sekunden zu ermöglichen, soll das Modell erneute Prediktionen auf Basis der bereits predizierten Bilder erstellen. 
+    Dies wird wiederholt bis der benötigte Zeithorizont abgedeckt ist. Im Folgenden wir der Begriff Convolutional LSTM durch ConvLSTM abgekürzt.
 
 \section{Vorverarbeitung der Daten}
 \label{sec:preprocessing}
@@ -146,10 +147,11 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
     \subsection{Konvertierung der Karte}
         Die Karteninformation ist Teil des scenario.proto und wird in Form des map.proto in jedem Szenario bereitgestellt.
-        Ein Auszug aus der map.proto Definition der in Listing~\ref{lst:maplisting} dargestellt wird zeigt diese Liste und die Definition der Punkte. 
+        Ein Auszug aus der map.proto Definition der in Listing~\ref{lst:maplisting} dargestellt wird, zeigt die Liste und die Definition der Punkte. 
         Hierbei ist zu beachten, dass die Punkte in Metern zu einem beliebigen Ursprung gegeben sind. 
-        Die \grqq polyline\grqq~definiert dann ein Feature des Straßennetzwerks (im Beispiel für \grqq LaneCenter\grqq~). Diese ist eine Liste von \grqq MapPoints\grqq~welche Segemente zwischen aufeinanderfolgenden Punkten definieren.
-        Da die Auflösung der Punkt groß genug ist werden diese Einfach in das Raster übertragen. 
+        Die \grqq polyline\grqq~definiert dann ein Feature des Straßennetzwerks (im Beispiel für den Feature Typ \grqq LaneCenter\grqq~). 
+        Diese ist eine Liste von \grqq MapPoints\grqq~welche Segemente zwischen aufeinanderfolgenden Punkten definiert.
+        Da die Auflösung der Punkte groß genug ist, werden diese direkt in das Raster übertragen. 
         Sobald ein \grqq MapPoint\grqq~innerhalb eines Rasterelements liegt wird dieses entsprechend des Linientypen eingefärbt.
         \vspace{0.5cm}
         \begin{lstlisting}[language=protobuf2, caption=Auszug aus map.proto, label={lst:maplisting}]
@@ -211,12 +213,12 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             \end{figure}
 
     \subsection{Konvertierung der Objekte}
-        Der Protobuf enthält Informationen über die Größe sowie globale Position und Orienierung der Objekte. 
+        Der Protobuf enthält Informationen über die Größe, globale Position und Orienierung der Objekte. 
         Dadurch können die vier 2D-Eckkoordinaten der Objekte berechnet werden. Um diese in das 2D-Raster zu übertragen wird die Grundfläche der Box entlang der Diagonale in  
         zwei Dreiecke aufgeteilt und anschließend in das Raster übertragen. Wenn Objekte kleiner als ein Rasterelement sind, werden sie auf ein ganzes Rasterelement übertragen. 
         So kann sichergestellt werden, dass alle Objekte in der Darstellung repräsentiert werden.
         Die Definition der Objekte im Protobuf wird in Listing~\ref{lst:objectlisting} aufgeführt. 
-        Das \grqq valid\grqq~Flag gibt an ob die Daten verwertbar sind. 
+        Das \grqq valid\grqq~Flag gibt an ob der aktuelle Zustand verwertbar ist. 
         Ist dieses für einen Zeitschritt nicht wahr, wird das Objekt für den zugehörigen Schritt nicht in das Raster übertragen.
         \vspace{0.5cm}
         \begin{lstlisting}[language=protobuf2, caption=Auszug aus scenario.proto, label={lst:objectlisting}]
@@ -236,7 +238,8 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         \end{lstlisting}
         Im Abbildung~\ref{fig:stat_objects} werden Ausschnitte aus dem gesamten Szenario 38 des Validierungsdatensatzes dargestellt.
         Die Objekte werden entsprechend ihrer globalen Position dem Raster hinzugefügt.
-        Da bei der Erstellung der Bilder für die Einfärbung eine Heatmap verwendet wir, werden stets die höchsten Werte in der hellsten Farbe dargestellt. 
+        Da bei der Erstellung der Bilder für die Einfärbung eine farbige Heatmap verwendet wird, werden stets die höchsten Werte in der hellsten Farbe dargestellt. 
+        Der Wert eines jeden Pixels wird durch eine Skalar abgebildet.
         Deshalb ist die Karte in Abbildung~\ref{fig:stat_map} auch deutlich heller eingezeichnet als in Abbildung~\ref{fig:stat_objects}.
 
         \begin{figure}[H]
@@ -271,7 +274,8 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         \paragraph{Dynamische Darstellungsform für Objekte}
         Bei der dynamischen Darstellungsform, müssen alle Objekte auf Basis der aktuellen Position des autonomen Fahrzeugs 
         in dessen lokales Koordinatensystem transformiert werden. Die Information darüber welches Fahrzeug das autonom agierende ist, 
-        kann ebenfalls dem Protobuf entnommen werden. Die dynamische Darstellung der Objekte wird in Abbildung~\ref{fig:dyn_objects} anhand des zweiten Scenarios aus dem Validierungsdatensatz gezeigt.
+        kann ebenfalls dem Protobuf entnommen werden. Die dynamische Darstellung der Objekte wird in Abbildung~\ref{fig:dyn_objects} 
+        anhand des zweiten Szenarios aus dem Validierungsdatensatz gezeigt.
         
         \begin{figure}[H]
             \centering
@@ -307,21 +311,25 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         Diese beinhaltet einen Ordner für jedes Szenario. 
         Ordner bei denen die statische Darstellungsform verwendet wurde tragen den prefix \grqq static\textunderscore\grqq .
     \subsection{Probleme bei der Datengenerierung} 
-        \paragraph{Fehler durch Rasterisierung} Die Rasterisierung dazu führt, dass Objekte nur mit der Rasterauflösung von 0.5~m positioniert sein können. 
+        \paragraph{Fehler durch Rasterisierung} Die Rasterisierung führt dazu, dass Objekte nur mit der Rasterauflösung von 0.5~m positioniert sein können. 
         Deshalb kann es vorkommen, dass Objekte von einem Zeitschritt zum nächsten um die Rasterauflösung springen. 
-        Dies führt bei einer nur geringen Bewegung, die allerdings die grenze zum nächsten Feld des Rasters überschreitet, zu großen Fehlern. 
+        Dies führt bei einer nur geringen Bewegung, die allerdings die Grenze zum nächsten Feld des Rasters überschreitet, zu großen Fehlern. 
+        Ein weiter Fehler bei der Rasterisierung tritt bei der Übertragung der Objekte in das Raster auf. Durch die effiziente Betrachtung als Dreicke, kommt es vor, 
+        dass Objekte unscharfe Kanten oder Löcher erhalten.
+        
         \paragraph{Konvertierungszeit} Durch die große Datenmenge der Protobufs und die ineffiziente Programmierung des Konvertierungsalgorithmus, 
         benötigt dieser zwischen 150~s und 200~s für die Konvertierung eines Szenarios.
 
+\pagebreak
 \section{ConvLSTM für Bewegungsvorhersage}
-    Das Convolutional LSTM bietet die Möglichkeit die Informationen auf Bildebene miteinander zu assoziieren 
+    Das ConvLSTM bietet die Möglichkeit die Informationen auf Bildebene miteinander zu assoziieren 
     und in einen Zeitlichen Kontext zu bringen. Aufgrund dieser Eigenschaften bietet es eine gute Grundlage für den Anwendungsfall.
     \subsection{Modell}
-        Für die Erstellung des Modells wurden tensorflow und keras eingesetzt. 
-        Diese beiden Bibliotheken bieten die Möglichkeit mit einfachen Interfaces komplexe funktionalitäten umzusetzen.
+        Für die Erstellung des Modells wurden Tensorflow und Keras eingesetzt. 
+        Diese Bibliotheken bieten die Möglichkeit mit einfachen Interfaces komplexe Funktionalitäten umzusetzen.
         \subsubsection{Architektur}
-            Das Netzwerk folgt der Architektur die in Listing~\ref{lst:summarylisting} dargestellt ist. Es besteht aus mehreren Convolutional LSTM Layern die über eine jeweils kleinere Fenstergröße verfügen.
-            Um die generalisierung des Netzwerks zu verbessern und geringere Trainingszeiten zu ereichen werden Normalisierungs Layers eingefügt. 
+            Das Netzwerk folgt der Architektur die in Listing~\ref{lst:summarylisting} dargestellt ist. Es besteht aus mehreren ConvLSTM Layern die über eine jeweils kleiner werdende Fenstergröße verfügen.
+            Um die Generalisierung des Netzwerks zu verbessern und geringere Trainingszeiten zu ereichen werden Normalisierungs Layers eingefügt. 
             Die Netzwerkarchitektur wurde Aufgrund der guten Ergebnisse, die im Beispiel von Keras~\cite{Keras2021} erziehlt wurden, gewählt.
             \begin{lstlisting}[caption=Ausgabe des model.summary() Aufrufs, label={lst:summarylisting}, basicstyle=\tiny, numbers=none]
                     _________________________________________________________________
@@ -354,10 +362,13 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
                 2967681 \cdot 4~Bytes = 11.87~GB
                 \label{memory-size}
             \end{align}
+    \pagebreak
     \subsection{Training}
-        Beim Training wurde zunächst die dynamische Darstellungsform der Szenarioen Verwendet. 
+        Beim Training wurde zunächst die dynamische Darstellungsform der Szenarien verwendet. 
         Diese lieferte allerdings transformierte und rotierte Bilder bei denen für eine erneute Prediktion die Transformation und Rotation bestimmt werden musste. 
-        Um diesen Prozess zu vereinfachen wurde deshalb das Training auf die statische Darstellungsform umgestellt.
+        Um diesen Prozess zu vereinfachen, wurde das Training auf die statische Darstellungsform umgestellt.
+        Das Modell das für die Prediktion der Ergebnisse in Kapitel~\ref{sec:results} eingesetzt wurde ausschließlich mit 1000~Ausschnitten am Anfang der Szenarien trainiert.
+        Auch hierbei kam es schon zu einer gesamten Trainingszeit von einem Tag und 17~Stunden.
         \subsubsection{Spezifische Loss-Funktion}
 	        Da die Trainingsbilddaten viele Bereiche enthalten die für die Performance des Netzwerks nicht relevant sind, 
             wurde eine für das Netzwerk zugeschnittene Loss funktion Implementiert. 
@@ -369,25 +380,27 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
             Der Wert wird dann mit 20~\% gewichtet.
         \subsubsection{Generierung der Trainingsdaten zur Laufzeit}
             Um das Training mit der gesamten Menge der Szenariodaten auf einer Platform mit beschränkten Ressourcen zu ermöglichen wurde ein Gernerator für Trainingsdaten implementiert.
-            Dieser verwendet eine Datenstruktur die Dateipfade enthält und lädt die Trainingsdaten immer erst zur Lauftzeit in den Arbeitsspeicher.
+            Dieser verwendet eine Datenstruktur die auf Dateipfaden basiert. Deren Inhalte werden dann immer erst zur Lauftzeit in den Arbeitsspeicher geladen.
         \subsubsection{Gradient Accumulation}
             Zudem wurde das Prinzip der Gradient Accumulation eingesetzt um den auf der Grafikkarte benötigten Speicherplatz zu reduzieren. 
-            Hierbei werden die Batches die zum Training verwendet werden aufgeteilt. Diese werden dann nacheinander trainiert. Der resultierende Gradient wird dann im Anschluss akkumuliert.
+            Hierbei werden die Batches die zum Training verwendet werden aufgeteilt. Diese werden dann nacheinander zum Training verwendet. Der resultierende Gradient wird dann im Anschluss akkumuliert.
             Dadurch entsteht beim Training der gleiche Effekt wie bei größeren Batch Größen. Der Speicherbedarf bleibt jedoch konstant klein.~\cite{Ttowardsdatascience2021}
-
+\pagebreak
 \section{Ergebnisse}
-    Der Ansatz ein Convolutional LSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse.
+\label{sec:results}
+    Der Ansatz ein ConvLSTM für die Bewegungsvorhersage einzusetzen zeigt erste vielversprechende Ergebnisse.
     Alle Prediktionen von Abbildung~\ref{fig:out_low_dens} bis Abbildung~\ref{fig:out_static_brake} dienen der Veranschaulichung der Performance des ConvLSTMs. 
-    Besser Sichtbar sind diese jedoch in Form von Animationen. Diese können in dem beigefügten Jupyter Notebook inference.ipynb erzeugt werden. 
-    Hierbei wird die Datenkonvertierung nicht mehr durchgeführt. 
+    Besser sichtbar sind diese jedoch in Form von Animationen. Diese können im beigefügten Jupyter Notebook inference.ipynb erzeugt werden. 
+    Hierbei wird die Datenkonvertierung und das Training nicht mehr durchgeführt. Das Trainierte Modell wird aus einem alten Trainingsstand geladen.
 
-    Für die Erstellung der Prediktionen wurde das Trainierte Convolutional LSTM verwendet. Für Prediktionen die über 100~ms hinaus gehen, wurde das Ergebnis als jeweils 10tes Bild wieder in das Netzwerk eingespeist.
+    Für die Erstellung der Prediktionen wurde das Trainierte ConvLSTM verwendet. Für Prediktionen die über 100~ms hinaus gehen, wurde das Ergebnis als jeweils 10tes Bild wieder in das Netzwerk eingespeist.
     
+    Auf den folgenden Seiten werden einzelne Scenarien dargestellt und die Ergebnisse erläutert.
     
     \pagebreak
     \subsection{Scenario mit geringer Dichte an Objekten}
         In Szenarien mit gerninger Fahrzeugdichte passen die Ausgaben des Modells grundlegend zu den Refernzdaten des Validierungsdatensatzes.
-        Dies ist im folgenden Beispiel erkennbar. Besonders in Abblidung~\ref{fig:out_low_dens} bei +1~s ist gut zu sehen wie die Bewegung der drei größeren Objekte weiter prediziert wird. 
+        Dies ist im folgenden Beispiel erkennbar. Besonders in Abblidung~\ref{fig:out_low_dens} bei +1~s ist gut zu sehen wie die Bewegung der drei größeren Objekte weiter prediziert wurde. 
 
         \begin{figure}[H]
             \centering
@@ -425,8 +438,10 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
     \pagebreak
     \subsection{Komplexes Szenario mit unterschiedlichen Bewegungsrichtungen} 
-        Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
-        In der Abbildung~\ref{fig:out_opposite} werden alle Objekte in die gleiche Richtung prediziert. Dies ist für die in der Abbildung oben liegende Fahrspur falsch.
+        Für den Fall eines komplexeren Szenarios mit vielen Objekten, unterschiedlichen Fahrtrichtungen und 
+        komplexeren Kartensituationen, liefert das Modell unzuverlässige Ergebnisse.
+        In der Abbildung~\ref{fig:out_opposite} werden alle Objekte in die gleiche Richtung prediziert. 
+        Dies ist für die in der Abbildung oben liegende Fahrspur falsch.
 
         \begin{figure}[H]
             \centering
@@ -464,9 +479,12 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
 
     \pagebreak
     \subsection{Szenario mit statischem Hindernis am Straßenrand} 
-        Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge für eine statisches Hindernis am Straßenrand verzögern müssen. 
-        Hier liegen die Prediktionen relativ nah an den Referenzdaten. In Abbildung~\ref{fig:out_static_brake} wird zudem ersichtlich, dass die predizierte Positionsänderung der Objekte nicht für das gesamte Ausgangsbild gleich ist. 
-        Objekte die zu Beginn des Szenarios schneller sind bewegen sich noch weiter als Objekte die bereits langsam sind und innerhalb des predizierten Zeitraumes zum Stillstand kommen. 
+        Ein Beispiel bei dem bessere Ergebnisse erziehlt wurden ist das folgende Szenario bei dem die Fahrzeuge 
+        für ein statisches Hindernis am Straßenrand verzögern müssen. 
+        Hier liegen die Prediktionen relativ nah an den Referenzdaten. 
+        In Abbildung~\ref{fig:out_static_brake} wird zudem ersichtlich, dass die predizierte Positionsänderung der 
+        Objekte nicht für das gesamte Ausgangsbild gleich ist. 
+        Objekte die zu Beginn des Szenarios schneller sind, bewegen sich weiter als Objekte die bereits langsam starten und innerhalb des predizierten Zeitraumes zum Stillstand kommen. 
 
         \begin{figure}[H]
             \centering
@@ -503,12 +521,12 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
         \end{figure}
     \pagebreak
     \subsection{Beobachtete Probleme bei der Prediktion}
-        Folgende Probleme wurden bei der Prediktion in kombination mit der Datenaufbereitung fetstgestellt.
+        Folgende Probleme wurden bei der Prediktion in Kombination mit der Datenaufbereitung festgestellt.
         
         \paragraph{Probleme durch nichtlineare Einfärbung bei Rasterisierung} Da bei der Datenverarbeitung eine 
         nichtlineare Funktion zum einfärben der Objekte und Kartendaten verwendet wurde, unterscheiden sich die Trainingsdaten 
         zum Teil stark in der Intesität. Dies fürhrt dazu, dass das Decoding der Bildinformationen in Positionsdaten auf 
-        Basis von klassischer Bildverarbeitung nur aufwändig möglich ist. Daher kann im Rahmen dieses Projketes keine aussagekräftige 
+        Basis von klassischer Bildverarbeitung nur aufwändig möglich ist. Daher kann im Rahmen des Projekts keine aussagekräftige 
         Auswertung über die Genauigkeit der Prediktionen erfolgen.
 
         Durch inkonsequente Einfärbung der Trainingsdaten ist es zudem nicht möglich die Daten aufzubereiten und mehrfache Prediktionen durchzuführen.
@@ -523,9 +541,13 @@ Convolutional LSTM zur Bewegungsvorhersage von Verkehrsteilnehmern \\
     \subsection{Lessons Learned und Future Work}
         \begin{itemize}
             \item Gradient Accumulation ermöglicht den Speicherbedarf für Zwischenergebnisse auf der GPU zu verringern.
-            \item Der Rechenaufwand für die Rasterisierung der Daten, sowie der benötigte Speicherbedarf für Convolutional LSTMs sollte nicht unterschätzt werden.
-            \item Die Inference Zeit ist deutlich schlechter als bei einer Bild-Klassifikation. Dies liegt an der größe des Netzwerks und der Menge der Eingangsdaten. Dies sollte für die praktische Verwendbarkeit des ConvLSTM+Raster Ansatzes berücksichtigt werden. 
-            \item Durch höhere Auflösung des Rasters könnten Objekte besser unterschieden und unabhängig voneinander prediziert werden. Dies führt allerdings zu einer geringeren betrachtbaren Kartengröße oder zu einem größeren und langsameren Netzwerk.
+            \item Der Rechenaufwand für die Rasterisierung der Daten, sowie der benötigte Speicherbedarf für ConvLSTMs sollte nicht unterschätzt werden.
+            \item Die Inference Zeit ist deutlich schlechter als bei einer Bild-Klassifikation. 
+            Dies liegt an der Größe des Netzwerks und der Menge der Eingangsdaten. 
+            Dies sollte für die praktische Verwendbarkeit des ConvLSTM und Rasterisierungs Ansatzes berücksichtigt werden. 
+            \item Durch geringer Objektdichte könnten Objekte besser unterschieden und unabhängig voneinander prediziert werden. 
+            Daher sollte die Performance auch bei einer höheren Auflösung des Rasters besser werden.
+            Dies führt allerdings zu einer geringeren betrachtbaren Kartengröße oder zu einem größeren und langsameren Netzwerk.
         \end{itemize}
 \pagebreak
 \bibliography{motion-prediction}{}
