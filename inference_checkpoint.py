@@ -208,28 +208,6 @@ def load_scenario(n_frames=10):
 
 def predict_future_frame(frames):
     pred_frames = seq.predict(frames)
-    
-    # corr_img = np.zeros((4, 64, 64, 1))
-    # corr_img[0] = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 0:64], postprocess_map(frames[0, 9])[0:64, 0:64])
-    # corr_img[1]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 0:64], postprocess_map(frames[0, 9])[64:128, 0:64])
-    # corr_img[2]  = cross_image(postprocess_map(pred_frames[0, 9])[64:128, 64:128], postprocess_map(frames[0, 9])[64:128, 64:128])
-    # corr_img[3]  = cross_image(postprocess_map(pred_frames[0, 9])[0:64, 64:128], postprocess_map(frames[0, 9])[0:64, 64:128])
-
-    # unravel_max = np.zeros((4, 3))
-    # for i in range(0, 4):
-    #     unravel_max[i] = np.unravel_index(np.argmax(corr_img[i]), corr_img[i].shape)
-
-    # center_offset = 32
-    # center = np.array((center_offset, center_offset, 0))
-    # radius_from_center = np.sqrt(center_offset*center_offset+center_offset*center_offset)
-
-    # unravel_max = (unravel_max - center) * radius_from_center
-    # map_offset =  (unravel_max.sum(axis=0)/radius_from_center) / 4
-
-    # map_shift_angle = np.arctan2(radius_from_center * (1 + unravel_max.sum(axis=0)[1]), radius_from_center * (1 + unravel_max.sum(axis=0)[0]))/4
-
-    # # print("offset: ", map_offset) # dividing this by four since we are using 4 quadrants
-    # # print("shift angle: ", map_shift_angle)
 
     FILEPATH = PATHNAME + '/validation_tfexample.' + scenario_name
 

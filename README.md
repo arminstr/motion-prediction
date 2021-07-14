@@ -1,33 +1,24 @@
-# Rainbow-Motion-CNN
-A motion prediction cnn trained on the waymo dataset. Therfore it is awesomly accurate but limited to educational and non commercial use.
+# Wie wird inference.ipynb gestartet?
+Hierfür ist ein Rechner mit GPU und installierten CUDA Treibern notwendig.
 
-## Main concept
-This repository contians the code for my submission to the Waymo Motion Prediction Challenge 2021. It is based on Wayom's data and inspired by the Minigo [[1]](#1) project. 
+Um die Jupyter Notebooks starten zu können müssen zudem einige Python packages installiert werden. 
+Diese wurden in der m-p-python-req.txt Datei mit aktiviertem venv und 
+```bash
+pip freeze > requirements.txt
+```
+festgehalten.
 
-### Challenge Overview
-"Given agents' tracks for the past 1 second on a corresponding map, predict the positions of up to 8 agents for 8 seconds into the future. To enable the motion prediction challenge, the ground truth future data for the test set is hidden from challenge participants. As such, the test sets contain only 1 second of history data. The validation sets contain the ground truth future data for use in model development. In addition, the test and validation sets provide a list of up to 8 object tracks in the scene to be predicted. These are selected to include interesting behavior and a balance of object types." [[2]](#2)
+Um diese zu laden muss ein neues virtuelles Envirmonment erstellt und der folgende Command ausgeführt werden:
+```bash
+pip install -r m-p-python-req.txt
+```
 
-### Data conversion
-Information from the dataset is converted into a grid from ego vehicle perspective. The following images are a visualization of this concept. Each time step is added as a new state to the data grid. This way vehicle traces show up in color gradients. :rainbow:
+Nun müssen noch die absoluten Pfade im Notebook angepasst werden. 
+Anschließend sollte das Inference Notebook ausführbar sein. 
 
-<table>
-  <tr>
-    <td><img src="images/visu_past_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="500" alt="Image of the Rainbow Traces for past second."></td>
-    <td><img src="images/visu_uncompressed_tf_example_training_training_tfexample_tfrecord-00000-of-01000.png" width="500" alt="Image of the Rainbow Traces for all 9 seconds."></td>
-  </tr>
-  <tr>
-    <td><sub><em>Figure 1:</em> Image of the Rainbow Traces for past second stored in the scenario.</sub></td>
-    <td><sub><em>Figure 2:</em> Rainbow Traces for all time steps stored in the sceanrio.</sub></td>
-  </tr>
-</table>
+Fragen können gerne an armin.atraller@hs-augsburg.de gestellt werden. 
 
-## References
-<a id="1">[1]</a> 
-Minigo: A minimalist Go engine modeled after AlphaGo Zero, built on MuGo. 
-Online.
-[github.com](https://github.com/tensorflow/minigo).
-
-<a id="2">[2]</a> 
-Waymo Open Dataset - Motion Prediction Challenge. 
-Online. 
-[waymo.com](https://waymo.com/open/challenges/2021/motion-prediction/).
+## Weitere Infos
+- Eine GPU und CUDA sind notwendig für die Ausführung der Notbooks und Python Skripte
+- Die Dokumentation liegt als pdf im Ordner /documentation
+- Die Inference verwendet bereits gerasterte Szenarien. Diese liegen im Ordner /data/validation
