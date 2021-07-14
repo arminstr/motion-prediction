@@ -22,3 +22,4 @@ Fragen können gerne an armin.straller@hs-augsburg.de gestellt werden.
 - Eine GPU und CUDA sind notwendig für die Ausführung der Notbooks und Python Skripte
 - Die Dokumentation liegt als pdf im Ordner /documentation
 - Die Inference verwendet bereits gerasterte Szenarien. Diese liegen im Ordner /data/validation
+- Link zur HS Cloud https://cloud.hs-augsburg.de/s/ZTYk9wJZBa5Xmw7
